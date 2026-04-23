@@ -1,107 +1,153 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>KaraWeb – Dashboard</title>
-
-<!-- ✅ IMPORTANT : Charger Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
-<style>
-body {
-  margin:0;
-  background:#06080f;
-  color:white;
-  font-family:sans-serif;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-}
-
-#app { display:none; text-align:center; }
-
-.loader {
-  text-align:center;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KaraWeb – Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #06080f;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 24px;
+    }
+    .box {
+      max-width: 700px;
+      width: 100%;
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    button {
+      margin-top: 16px;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    #log {
+      margin-top: 16px;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0b1220;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
+  <div class="box">
+    <h1 id="title">Chargement du dashboard...</h1>
+    <p id="subtitle">Connexion en cours</p>
+    <button id="logoutBtn" onclick="logout()" style="display:none;">Se déconnecter</button>
+    <div id="log">Démarrage...</div>
+  </div>
 
-<!-- Loader -->
-<div id="loader" class="loader">
-  <h1>KaraWeb</h1>
-  <p>Chargement...</p>
-</div>
+  <script>
+    const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
 
-<!-- App -->
-<div id="app">
-  <h1 id="welcome">Bienvenue</h1>
-  <p>Connexion réussie ✅</p>
-  <button onclick="logout()">Se déconnecter</button>
-</div>
-
-<script>
-var AUTH = 'https://ykarali2004.github.io/karaweb/auth.html';
-
-var db = supabase.createClient(
-  'https://midkwlribyrryremnnyd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
-);
-
-async function boot() {
-  try {
-    // 🔥 récupérer token depuis URL
-    var hash = window.location.hash;
-    var params = new URLSearchParams(hash.replace('#',''));
-
-    var access_token = params.get('access_token');
-    var refresh_token = params.get('refresh_token');
-
-    if (access_token && refresh_token) {
-      await db.auth.setSession({
-        access_token: access_token,
-        refresh_token: refresh_token
-      });
-
-      // nettoyer URL
-      history.replaceState({}, document.title, window.location.pathname);
+    function log(message) {
+      const el = document.getElementById('log');
+      el.textContent += '\n' + message;
+      console.log(message);
     }
 
-    // récupérer user
-    const { data } = await db.auth.getUser();
+    const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
-    if (!data || !data.user) {
-      window.location.href = AUTH;
-      return;
+    if (!window.supabase) {
+      document.getElementById('title').textContent = 'Erreur';
+      document.getElementById('subtitle').textContent = 'La librairie Supabase ne charge pas';
+      log('window.supabase est introuvable.');
+      throw new Error('Supabase non chargé');
     }
 
-    // afficher app
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+    const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    var user = data.user;
+    async function boot() {
+      try {
+        log('URL actuelle : ' + window.location.href);
 
-    var name =
-      user.user_metadata?.full_name ||
-      user.user_metadata?.name ||
-      user.email;
+        const hash = window.location.hash.startsWith('#')
+          ? window.location.hash.slice(1)
+          : window.location.hash;
 
-    document.getElementById('welcome').textContent = "Bienvenue " + name;
+        const params = new URLSearchParams(hash);
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
 
-  } catch (e) {
-    console.error(e);
-    window.location.href = AUTH;
-  }
-}
+        log('access_token présent : ' + (!!access_token));
+        log('refresh_token présent : ' + (!!refresh_token));
 
-async function logout() {
-  await db.auth.signOut();
-  window.location.href = AUTH;
-}
+        if (access_token && refresh_token) {
+          log('Tentative de setSession...');
+          const { error: setError } = await client.auth.setSession({
+            access_token,
+            refresh_token
+          });
 
-boot();
-</script>
+          if (setError) {
+            log('Erreur setSession : ' + setError.message);
+            document.getElementById('title').textContent = 'Erreur session';
+            document.getElementById('subtitle').textContent = setError.message;
+            return;
+          }
 
+          log('setSession OK');
+          history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        log('Lecture utilisateur...');
+        const { data, error } = await client.auth.getUser();
+
+        if (error) {
+          log('Erreur getUser : ' + error.message);
+          document.getElementById('title').textContent = 'Erreur utilisateur';
+          document.getElementById('subtitle').textContent = error.message;
+          return;
+        }
+
+        if (!data || !data.user) {
+          log('Aucun utilisateur trouvé, redirection auth.');
+          window.location.href = AUTH_URL;
+          return;
+        }
+
+        const user = data.user;
+        const name =
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email ||
+          'Client';
+
+        document.getElementById('title').textContent = 'Bienvenue ' + name;
+        document.getElementById('subtitle').textContent = 'Connexion réussie ✅';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+        log('Utilisateur OK : ' + (user.email || 'sans email'));
+      } catch (e) {
+        document.getElementById('title').textContent = 'Erreur fatale';
+        document.getElementById('subtitle').textContent = e.message || 'Erreur inconnue';
+        log('Erreur fatale : ' + (e.stack || e.message || e));
+      }
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = AUTH_URL;
+    }
+
+    boot();
+  </script>
 </body>
 </html>
