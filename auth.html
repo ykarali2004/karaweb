@@ -110,15 +110,36 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text)
 
 <script>
 var DASH = 'https://ykarali2004.github.io/karaweb/dashboard.html';
+var ADMIN = 'https://ykarali2004.github.io/karaweb/admin.html';
 
 var db = supabase.createClient(
   'https://midkwlribyrryremnnyd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
 );
 
-db.auth.getSession().then(function(r) {
-  if (r.data && r.data.session) {
+async function redirectUserByRole(user) {
+  const { data, error } = await db
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Erreur profil:', error.message);
     window.location.replace(DASH);
+    return;
+  }
+
+  if (data && data.role === 'admin') {
+    window.location.replace(ADMIN);
+  } else {
+    window.location.replace(DASH);
+  }
+}
+
+db.auth.getSession().then(async function(r) {
+  if (r.data && r.data.session && r.data.session.user) {
+    await redirectUserByRole(r.data.session.user);
   }
 });
 
@@ -139,19 +160,22 @@ function doLogin() {
   var email = document.getElementById('login-email').value.trim();
   var pass = document.getElementById('login-pass').value;
   var btn = document.getElementById('btn-login');
+
   if (!email || !pass) {
     showAlert('alert-login', 'Remplis tous les champs.', 'err');
     return;
   }
+
   btn.disabled = true;
   btn.textContent = 'Connexion...';
-  db.auth.signInWithPassword({ email: email, password: pass }).then(function(r) {
+
+  db.auth.signInWithPassword({ email: email, password: pass }).then(async function(r) {
     if (r.error) {
       showAlert('alert-login', 'Email ou mot de passe incorrect.', 'err');
       btn.disabled = false;
       btn.textContent = 'Se connecter →';
     } else {
-      window.location.replace(DASH);
+      await redirectUserByRole(r.data.user);
     }
   });
 }
@@ -161,19 +185,28 @@ function doRegister() {
   var email = document.getElementById('reg-email').value.trim();
   var pass = document.getElementById('reg-pass').value;
   var btn = document.getElementById('btn-reg');
+
   if (!name || !email || !pass) {
     showAlert('alert-reg', 'Remplis tous les champs.', 'err');
     return;
   }
+
   if (pass.length < 6) {
     showAlert('alert-reg', 'Mot de passe trop court (6 min).', 'err');
     return;
   }
+
   btn.disabled = true;
   btn.textContent = 'Création...';
-  db.auth.signUp({ email: email, password: pass, options: { data: { full_name: name } } }).then(function(r) {
+
+  db.auth.signUp({
+    email: email,
+    password: pass,
+    options: { data: { full_name: name } }
+  }).then(function(r) {
     btn.disabled = false;
     btn.textContent = 'Créer mon compte →';
+
     if (r.error) {
       showAlert('alert-reg', r.error.message, 'err');
     } else {
