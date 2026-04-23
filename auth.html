@@ -5,78 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KaraWeb – Connexion</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root {
-    --bg: #080b12;
-    --card: #111827;
-    --border: rgba(255,255,255,0.07);
-    --cyan: #00f0ff;
-    --violet: #a855f7;
-    --green: #22d3a5;
-    --text: #e2e8f0;
-    --muted: #64748b;
+    --bg: #080b12; --card: #111827; --border: rgba(255,255,255,0.07);
+    --cyan: #00f0ff; --violet: #a855f7; --green: #22d3a5; --text: #e2e8f0; --muted: #64748b;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  .bg-grid {
-    position: fixed; inset: 0; z-index: 0;
-    background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .bg-grid { position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px); background-size: 60px 60px; }
   .glow { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; }
   .glow-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,240,255,0.1), transparent 70%); top: -100px; left: -100px; }
   .glow-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(168,85,247,0.08), transparent 70%); bottom: -100px; right: -100px; }
-  .auth-container { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 24px; }
-  .logo {
-    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    text-align: center; margin-bottom: 32px; text-decoration: none; display: block;
-  }
+  #loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; }
+  .logo-load { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .spinner { width: 28px; height: 28px; border: 2px solid rgba(0,240,255,0.15); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #auth-content { display: none; position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 24px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; background: linear-gradient(135deg, var(--cyan), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; margin-bottom: 32px; text-decoration: none; display: block; }
   .auth-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; }
   .auth-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
-  .auth-tab {
-    flex: 1; padding: 10px; text-align: center; border-radius: 7px;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem;
-    cursor: pointer; transition: all 0.2s; color: var(--muted); border: none; background: transparent;
-  }
+  .auth-tab { flex: 1; padding: 10px; text-align: center; border-radius: 7px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; color: var(--muted); border: none; background: transparent; }
   .auth-tab.active { background: linear-gradient(135deg, var(--cyan), var(--violet)); color: #000; }
   .form-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
   .form-subtitle { color: var(--muted); font-size: 0.88rem; margin-bottom: 24px; }
   .form-group { margin-bottom: 16px; }
   .form-group label { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-group input {
-    width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-    border-radius: 8px; padding: 12px 14px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
-  }
+  .form-group input { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
   .form-group input:focus { border-color: rgba(0,240,255,0.4); }
-  .btn-submit {
-    width: 100%; padding: 13px; border-radius: 10px;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
-    border: none; cursor: pointer;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: #000; margin-top: 8px; transition: opacity 0.2s;
-  }
+  .btn-submit { width: 100%; padding: 13px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; background: linear-gradient(135deg, var(--cyan), var(--violet)); color: #000; margin-top: 8px; transition: opacity 0.2s; }
   .btn-submit:hover { opacity: 0.85; }
   .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
   .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--muted); font-size: 0.8rem; }
   .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .btn-google {
-    width: 100%; padding: 13px; border-radius: 10px;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
-    border: 1px solid var(--border); cursor: pointer; background: transparent; color: var(--text);
-    display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s;
-  }
+  .btn-google { width: 100%; padding: 13px; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; border: 1px solid var(--border); cursor: pointer; background: transparent; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
   .btn-google:hover { background: rgba(255,255,255,0.03); }
   .alert { padding: 12px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
   .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #f87171; display: block; }
@@ -90,14 +52,18 @@
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
 
-<div class="auth-container">
+<div id="loading-screen">
+  <div class="logo-load">KaraWeb</div>
+  <div class="spinner"></div>
+</div>
+
+<div id="auth-content">
   <a href="index.html" class="logo">KaraWeb</a>
   <div class="auth-card">
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
       <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Inscription</button>
     </div>
-
     <div class="panel active" id="panel-login">
       <div class="form-title">Bon retour 👋</div>
       <div class="form-subtitle">Connectez-vous à votre espace client</div>
@@ -111,7 +77,6 @@
         Continuer avec Google
       </button>
     </div>
-
     <div class="panel" id="panel-register">
       <div class="form-title">Créer un compte</div>
       <div class="form-subtitle">Rejoignez KaraWeb et gérez vos projets</div>
@@ -129,76 +94,80 @@
   </div>
 </div>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+<script>
+var DASHBOARD = 'https://ykarali2004.github.io/karaweb/dashboard.html';
 
-  const db = createClient(
-    'https://midkwlribyrryremnnyd.supabase.co',
-    'sb_publishable_qYmjQmeQoZvAtzMP-bnCOA_hEcu9RjK'
-  );
+var db = supabase.createClient(
+  'https://midkwlribyrryremnnyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
+);
 
-  // Déjà connecté → dashboard
-  const { data: { session } } = await db.auth.getSession();
-  if (session) window.location.href = 'dashboard.html';
-
-  function showAlert(id, msg, type) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.className = 'alert alert-' + type;
+// Écoute les changements d'auth — capte le retour Google
+db.auth.onAuthStateChange(function(event, session) {
+  if (session) {
+    window.location.href = DASHBOARD;
+  } else {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('auth-content').style.display = 'block';
   }
+});
 
-  window.switchTab = function(tab) {
-    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-    document.getElementById('panel-login').classList.toggle('active', tab === 'login');
-    document.getElementById('panel-register').classList.toggle('active', tab === 'register');
-  };
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+}
 
-  window.doLogin = async function() {
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-    const btn = document.getElementById('btn-login');
-    if (!email || !password) return showAlert('login-alert', 'Remplis tous les champs.', 'error');
-    btn.disabled = true;
-    btn.textContent = 'Connexion...';
-    const { error } = await db.auth.signInWithPassword({ email, password });
-    if (error) {
+function showAlert(id, msg, type) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'alert alert-' + type;
+}
+
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var password = document.getElementById('login-password').value;
+  var btn = document.getElementById('btn-login');
+  if (!email || !password) { showAlert('login-alert', 'Remplis tous les champs.', 'error'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Connexion...';
+  db.auth.signInWithPassword({ email: email, password: password }).then(function(res) {
+    if (res.error) {
       showAlert('login-alert', 'Email ou mot de passe incorrect.', 'error');
       btn.disabled = false;
       btn.textContent = 'Se connecter →';
-    } else {
-      window.location.href = 'dashboard.html';
     }
-  };
+    // Si succès → onAuthStateChange redirige automatiquement
+  });
+}
 
-  window.doRegister = async function() {
-    const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value;
-    const btn = document.getElementById('btn-register');
-    if (!name || !email || !password) return showAlert('register-alert', 'Remplis tous les champs.', 'error');
-    if (password.length < 6) return showAlert('register-alert', 'Mot de passe trop court (6 caractères min).', 'error');
-    btn.disabled = true;
-    btn.textContent = 'Création...';
-    const { error } = await db.auth.signUp({
-      email, password,
-      options: { data: { full_name: name } }
-    });
-    if (error) {
-      showAlert('register-alert', error.message, 'error');
+function doRegister() {
+  var name = document.getElementById('register-name').value.trim();
+  var email = document.getElementById('register-email').value.trim();
+  var password = document.getElementById('register-password').value;
+  var btn = document.getElementById('btn-register');
+  if (!name || !email || !password) { showAlert('register-alert', 'Remplis tous les champs.', 'error'); return; }
+  if (password.length < 6) { showAlert('register-alert', 'Mot de passe trop court (6 caractères min).', 'error'); return; }
+  btn.disabled = true;
+  btn.textContent = 'Création...';
+  db.auth.signUp({ email: email, password: password, options: { data: { full_name: name } } }).then(function(res) {
+    if (res.error) {
+      showAlert('register-alert', res.error.message, 'error');
     } else {
       showAlert('register-alert', '✓ Compte créé ! Vérifie ton email pour confirmer.', 'success');
     }
     btn.disabled = false;
     btn.textContent = 'Créer mon compte →';
-  };
+  });
+}
 
-  window.doGoogle = async function() {
-    await db.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: 'https://ykarali2004.github.io/karaweb/dashboard.html' }
-    });
-  };
+function doGoogle() {
+  db.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: DASHBOARD }
+  });
+}
 </script>
 </body>
 </html>
