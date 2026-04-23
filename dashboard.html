@@ -1,83 +1,422 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KaraWeb – Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KaraWeb – Mon espace</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #06080f;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 24px;
+    :root{
+      --bg:#06080f;
+      --bg2:#0d1220;
+      --card:#111827;
+      --card2:#0b1220;
+      --border:rgba(255,255,255,.08);
+      --text:#e5edf7;
+      --muted:#8da0b8;
+      --cyan:#00e7ff;
+      --violet:#8b5cf6;
+      --green:#22c55e;
+      --red:#ef4444;
     }
-    .box {
-      max-width: 700px;
-      width: 100%;
-      background: #111827;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 24px;
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(0,231,255,.08), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(139,92,246,.10), transparent 25%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
     }
-    button {
-      margin-top: 16px;
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
+
+    .loader-wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
     }
-    #log {
-      margin-top: 16px;
-      text-align: left;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #0b1220;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 14px;
+
+    .loader-box{
+      width:100%;
+      max-width:520px;
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:32px;
+      text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+
+    .brand{
+      font-size:38px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0 0 12px;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .spinner{
+      width:34px;
+      height:34px;
+      border:3px solid rgba(255,255,255,.12);
+      border-top-color:var(--cyan);
+      border-radius:50%;
+      margin:18px auto 0;
+      animation:spin .9s linear infinite;
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    #app{display:none}
+
+    .layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      background:rgba(10,14,24,.92);
+      border-right:1px solid var(--border);
+      padding:22px;
+    }
+
+    .logo{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0 0 24px;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .tag{
+      display:inline-block;
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      margin-bottom:24px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .nav button{
+      width:100%;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    .nav button.active{
+      background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));
+      border-color:rgba(0,231,255,.18);
+    }
+
+    .user-card{
+      margin-top:24px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .user-name{
+      font-size:18px;
+      font-weight:700;
+      margin:0 0 6px;
+    }
+
+    .user-mail{
+      font-size:13px;
+      color:var(--muted);
+      word-break:break-word;
+      margin:0 0 14px;
+    }
+
+    .logout{
+      width:100%;
+      border:0;
+      background:#fff;
+      color:#000;
+      padding:12px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .main{
+      padding:28px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:24px;
+    }
+
+    .title{
+      margin:0;
+      font-size:34px;
+      letter-spacing:-1px;
+    }
+
+    .subtitle{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .status{
+      border:1px solid rgba(34,197,94,.2);
+      background:rgba(34,197,94,.12);
+      color:#b6f3c6;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin-bottom:24px;
+    }
+
+    .card{
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .small-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .big-number{
+      font-size:34px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0;
+    }
+
+    .panel-title{
+      margin:0 0 14px;
+      font-size:20px;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin:0;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:1.3fr .9fr;
+      gap:18px;
+    }
+
+    .profile-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .line{
+      padding:12px 0;
+      border-bottom:1px solid var(--border);
+    }
+
+    .line:last-child{border-bottom:0}
+
+    .line-label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+
+    .line-value{
+      font-size:15px;
+      font-weight:600;
+      word-break:break-word;
+    }
+
+    .debug{
+      margin-top:24px;
+      background:var(--card2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+      color:#c9d6e6;
+      font-size:13px;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{border-right:0;border-bottom:1px solid var(--border)}
+      .grid,.two-col{grid-template-columns:1fr}
+      .topbar{flex-direction:column;align-items:flex-start}
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1 id="title">Chargement du dashboard...</h1>
-    <p id="subtitle">Connexion en cours</p>
-    <button id="logoutBtn" onclick="logout()" style="display:none;">Se déconnecter</button>
-    <div id="log">Démarrage...</div>
+
+  <div id="loader" class="loader-wrap">
+    <div class="loader-box">
+      <h1 class="brand">KaraWeb</h1>
+      <div>Chargement de votre espace client...</div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="layout">
+      <aside class="sidebar">
+        <h1 class="logo">KaraWeb</h1>
+        <div class="tag">Espace client</div>
+
+        <div class="nav">
+          <button class="active" type="button">Accueil</button>
+          <button type="button">Mes commandes</button>
+          <button type="button">Messages</button>
+          <button type="button">Mon profil</button>
+        </div>
+
+        <div class="user-card">
+          <p class="user-name" id="userName">Client</p>
+          <p class="user-mail" id="userEmail">...</p>
+          <button class="logout" onclick="logout()">Se déconnecter</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <h2 class="title" id="welcomeTitle">Bienvenue</h2>
+            <p class="subtitle">Votre espace KaraWeb est prêt.</p>
+          </div>
+          <div class="status">Connexion réussie</div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="small-label">Projets actifs</div>
+            <p class="big-number">0</p>
+          </div>
+          <div class="card">
+            <div class="small-label">Messages</div>
+            <p class="big-number">0</p>
+          </div>
+          <div class="card">
+            <div class="small-label">Statut</div>
+            <p class="big-number" style="font-size:24px">Client OK</p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <h3 class="panel-title">Aperçu</h3>
+            <p class="empty">
+              La connexion Google fonctionne correctement.  
+              Tu peux maintenant réintégrer tes vraies sections une par une sans casser l’authentification.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 class="panel-title">Mon profil</h3>
+            <div class="profile-list">
+              <div class="line">
+                <div class="line-label">Nom</div>
+                <div class="line-value" id="profileName">...</div>
+              </div>
+              <div class="line">
+                <div class="line-label">Email</div>
+                <div class="line-value" id="profileEmail">...</div>
+              </div>
+              <div class="line">
+                <div class="line-label">Provider</div>
+                <div class="line-value" id="profileProvider">Google</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="debug" id="debugBox">Démarrage...</div>
+      </main>
+    </div>
   </div>
 
   <script>
     const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
-
-    function log(message) {
-      const el = document.getElementById('log');
-      el.textContent += '\n' + message;
-      console.log(message);
-    }
-
     const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
+    function debug(message) {
+      const box = document.getElementById('debugBox');
+      box.textContent += '\n' + message;
+      console.log(message);
+    }
+
     if (!window.supabase) {
-      document.getElementById('title').textContent = 'Erreur';
-      document.getElementById('subtitle').textContent = 'La librairie Supabase ne charge pas';
-      log('window.supabase est introuvable.');
+      alert('Supabase ne charge pas.');
       throw new Error('Supabase non chargé');
     }
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    function showApp(user) {
+      const name =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.email ||
+        'Client';
+
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+
+      document.getElementById('userName').textContent = name;
+      document.getElementById('userEmail').textContent = user.email || '';
+      document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + name;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = user.email || '';
+      document.getElementById('profileProvider').textContent =
+        user.app_metadata?.provider || 'Google';
+    }
+
     async function boot() {
       try {
-        log('URL actuelle : ' + window.location.href);
+        debug('URL actuelle : ' + window.location.href);
 
         const hash = window.location.hash.startsWith('#')
           ? window.location.hash.slice(1)
@@ -87,58 +426,45 @@
         const access_token = params.get('access_token');
         const refresh_token = params.get('refresh_token');
 
-        log('access_token présent : ' + (!!access_token));
-        log('refresh_token présent : ' + (!!refresh_token));
+        debug('access_token présent : ' + (!!access_token));
+        debug('refresh_token présent : ' + (!!refresh_token));
 
         if (access_token && refresh_token) {
-          log('Tentative de setSession...');
+          debug('Tentative de setSession...');
           const { error: setError } = await client.auth.setSession({
             access_token,
             refresh_token
           });
 
           if (setError) {
-            log('Erreur setSession : ' + setError.message);
-            document.getElementById('title').textContent = 'Erreur session';
-            document.getElementById('subtitle').textContent = setError.message;
+            debug('Erreur setSession : ' + setError.message);
+            alert(setError.message);
             return;
           }
 
-          log('setSession OK');
+          debug('setSession OK');
           history.replaceState({}, document.title, window.location.pathname);
         }
 
-        log('Lecture utilisateur...');
         const { data, error } = await client.auth.getUser();
 
         if (error) {
-          log('Erreur getUser : ' + error.message);
-          document.getElementById('title').textContent = 'Erreur utilisateur';
-          document.getElementById('subtitle').textContent = error.message;
+          debug('Erreur getUser : ' + error.message);
+          alert(error.message);
           return;
         }
 
         if (!data || !data.user) {
-          log('Aucun utilisateur trouvé, redirection auth.');
+          debug('Aucun utilisateur trouvé, redirection auth.');
           window.location.href = AUTH_URL;
           return;
         }
 
-        const user = data.user;
-        const name =
-          user.user_metadata?.full_name ||
-          user.user_metadata?.name ||
-          user.email ||
-          'Client';
-
-        document.getElementById('title').textContent = 'Bienvenue ' + name;
-        document.getElementById('subtitle').textContent = 'Connexion réussie ✅';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-        log('Utilisateur OK : ' + (user.email || 'sans email'));
+        debug('Utilisateur OK : ' + (data.user.email || 'sans email'));
+        showApp(data.user);
       } catch (e) {
-        document.getElementById('title').textContent = 'Erreur fatale';
-        document.getElementById('subtitle').textContent = e.message || 'Erreur inconnue';
-        log('Erreur fatale : ' + (e.stack || e.message || e));
+        debug('Erreur fatale : ' + (e.message || e));
+        alert(e.message || 'Erreur inconnue');
       }
     }
 
