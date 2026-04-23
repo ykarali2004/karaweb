@@ -586,9 +586,6 @@
             <button class="save-btn" type="button" id="saveProfileBtn">Sauvegarder</button>
             <div class="profile-status" id="profileStatus">Profil prêt à être modifié.</div>
 
-            <div class="note">
-              Le nom est maintenant relié à la table profiles.
-            </div>
           </div>
         </section>
       </main>
@@ -682,7 +679,7 @@
         .maybeSingle();
 
       if (error) {
-        setProfileStatus('Erreur profil : ' + error.message);
+        setProfileStatus('Une erreur est survenue.');
         return null;
       }
 
@@ -699,134 +696,134 @@
       document.getElementById('inputName').value = name;
       document.getElementById('inputEmail').value = user.email || '';
 
-      setProfileStatus('Profil chargé.');
+      setProfileStatus('');
 
       return data;
     }
 
-    function bindProfileSave(user) {
-      const btn = document.getElementById('saveProfileBtn');
-      if (!btn) return;
+function bindProfileSave(user) {
+  const btn = document.getElementById('saveProfileBtn');
+  if (!btn) return;
 
-      btn.addEventListener('click', async function() {
-        const inputName = document.getElementById('inputName');
-        const fullName = (inputName.value || '').trim();
+  btn.addEventListener('click', async function() {
+    const inputName = document.getElementById('inputName');
+    const fullName = (inputName.value || '').trim();
 
-        if (!fullName) {
-          setProfileStatus('Le nom ne peut pas être vide.');
-          return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = 'Sauvegarde...';
-        setProfileStatus('Enregistrement du profil...');
-
-        const { error } = await client
-          .from('profiles')
-          .upsert(
-            {
-              id: user.id,
-              full_name: fullName
-            },
-            { onConflict: 'id' }
-          );
-
-        btn.disabled = false;
-        btn.textContent = 'Sauvegarder';
-
-        if (error) {
-          setProfileStatus('Erreur : ' + error.message);
-          return;
-        }
-
-        document.getElementById('userName').textContent = fullName;
-        document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
-        document.getElementById('profileName').textContent = fullName;
-
-        setProfileStatus('Profil sauvegardé avec succès.');
-      });
+    if (!fullName) {
+      setProfileStatus('Nom invalide.');
+      return;
     }
 
-    function getStatusClass(status) {
-      if (!status) return 'pending';
+    btn.disabled = true;
+    btn.textContent = 'Sauvegarde...';
+    setProfileStatus('Enregistrement...');
 
-      const s = status.toLowerCase();
+    const { error } = await client
+      .from('profiles')
+      .upsert(
+        {
+          id: user.id,
+          full_name: fullName
+        },
+        { onConflict: 'id' }
+      );
 
-      if (s.includes('cours')) return 'progress';
-      if (s.includes('livr')) return 'done';
-      if (s.includes('annul')) return 'cancelled';
-      if (s.includes('attente')) return 'pending';
-      return 'pending';
+    btn.disabled = false;
+    btn.textContent = 'Sauvegarder';
+
+    if (error) {
+      setProfileStatus('Une erreur est survenue.');
+      return;
     }
 
-    async function loadOrders(user) {
-      const ordersList = document.getElementById('ordersList');
-      const activeProjectsCount = document.getElementById('activeProjectsCount');
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
+    document.getElementById('profileName').textContent = fullName;
 
-      if (!ordersList) return;
+    setProfileStatus('Modifications enregistrées.');
+  });
+}
 
-      ordersList.innerHTML = `
-        <div class="list-item">
-          <h3 class="list-title">Chargement...</h3>
-          <p class="list-text">Récupération de vos commandes.</p>
-        </div>
-      `;
+function getStatusClass(status) {
+  if (!status) return 'pending';
 
-      const { data, error } = await client
-        .from('commandes')
-        .select('*')
-        .eq('client_id', user.id)
-        .order('created_at', { ascending: false });
+  const s = status.toLowerCase();
 
-      if (error) {
-        ordersList.innerHTML = `
-          <div class="list-item">
-            <h3 class="list-title">Erreur</h3>
-            <p class="list-text">${error.message}</p>
-          </div>
-        `;
-        return;
-      }
+  if (s.includes('cours')) return 'progress';
+  if (s.includes('livr')) return 'done';
+  if (s.includes('annul')) return 'cancelled';
+  if (s.includes('attente')) return 'pending';
+  return 'pending';
+}
 
-      if (!data || data.length === 0) {
-        if (activeProjectsCount) activeProjectsCount.textContent = '0';
+async function loadOrders(user) {
+  const ordersList = document.getElementById('ordersList');
+  const activeProjectsCount = document.getElementById('activeProjectsCount');
 
-        ordersList.innerHTML = `
-          <div class="list-item">
-            <h3 class="list-title">Aucune commande</h3>
-            <p class="list-text">Vous n’avez pas encore de commande pour le moment.</p>
-          </div>
-        `;
-        return;
-      }
+  if (!ordersList) return;
 
-      const activeCount = data.filter(function(order) {
-        const statut = (order.statut || '').toLowerCase();
-        return statut.includes('cours') || statut.includes('attente') || statut.includes('paid');
-      }).length;
+  ordersList.innerHTML = `
+    <div class="list-item">
+      <h3 class="list-title">Chargement...</h3>
+      <p class="list-text">Récupération de vos commandes.</p>
+    </div>
+  `;
 
-      if (activeProjectsCount) {
-        activeProjectsCount.textContent = String(activeCount);
-      }
+  const { data, error } = await client
+    .from('commandes')
+    .select('*')
+    .eq('client_id', user.id)
+    .order('created_at', { ascending: false });
 
-      ordersList.innerHTML = data.map(function(order) {
-        const badgeClass = getStatusClass(order.statut);
-        const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
+  if (error) {
+    ordersList.innerHTML = `
+      <div class="list-item">
+        <h3 class="list-title">Erreur</h3>
+        <p class="list-text">${error.message}</p>
+      </div>
+    `;
+    return;
+  }
 
-        return `
-          <div class="list-item">
-            <h3 class="list-title">${order.titre || 'Commande sans titre'}</h3>
-            <p class="list-text">
-              Type de projet : ${order.type_projet || '—'}<br>
-              Plan : ${order.plan || '—'}<br>
-              Description : ${order.description || '—'}<br>
-              Prix : ${prix}
-            </p>
-            <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
-          </div>
-        `;
-      }).join('');
-    }
+  if (!data || data.length === 0) {
+    if (activeProjectsCount) activeProjectsCount.textContent = '0';
+
+    ordersList.innerHTML = `
+      <div class="list-item">
+        <h3 class="list-title">Aucune commande</h3>
+        <p class="list-text">Vous n’avez pas encore de commande pour le moment.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const activeCount = data.filter(function(order) {
+    const statut = (order.statut || '').toLowerCase();
+    return statut.includes('cours') || statut.includes('attente') || statut.includes('paid');
+  }).length;
+
+  if (activeProjectsCount) {
+    activeProjectsCount.textContent = String(activeCount);
+  }
+
+  ordersList.innerHTML = data.map(function(order) {
+    const badgeClass = getStatusClass(order.statut);
+    const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
+
+    return `
+      <div class="list-item">
+        <h3 class="list-title">${order.titre || 'Commande sans titre'}</h3>
+        <p class="list-text">
+          Type de projet : ${order.type_projet || '—'}<br>
+          Plan : ${order.plan || '—'}<br>
+          Description : ${order.description || '—'}<br>
+          Prix : ${prix}
+        </p>
+        <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
+      </div>
+    `;
+  }).join('');
+}
 
     async function showApp(user) {
       currentUser = user;
