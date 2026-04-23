@@ -1,35 +1,26 @@
 <script>
-var DASH = 'https://ykarali2004.github.io/karaweb/dashboard.html';
-var AUTH = 'https://ykarali2004.github.io/karaweb/auth.html';
-
 var db = supabase.createClient(
   'https://midkwlribyrryremnnyd.supabase.co',
   'TA_CLE_ANON'
 );
 
-async function finishLogin() {
-  try {
-    const fullUrl = window.location.href;
+async function test() {
+  const url = window.location.href;
 
-    // Très important pour OAuth Supabase
-    if (fullUrl.includes('code=')) {
-      const { error } = await db.auth.exchangeCodeForSession(fullUrl);
-      if (error) throw error;
-    }
+  if (url.includes('code=')) {
+    await db.auth.exchangeCodeForSession(url);
+  }
 
-    const { data, error } = await db.auth.getSession();
-    if (error) throw error;
+  const { data } = await db.auth.getSession();
 
-    if (data && data.session) {
-      window.location.replace(DASH);
-    } else {
-      window.location.replace(AUTH);
-    }
-  } catch (err) {
-    console.error('Erreur callback:', err);
-    window.location.replace(AUTH);
+  console.log("SESSION:", data);
+
+  if (data.session) {
+    alert("Session OK");
+  } else {
+    alert("PAS DE SESSION");
   }
 }
 
-finishLogin();
+test();
 </script>
