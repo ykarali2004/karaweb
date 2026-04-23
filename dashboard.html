@@ -1,3 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>KaraWeb – Dashboard</title>
+
+<!-- ✅ IMPORTANT : Charger Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<style>
+body {
+  margin:0;
+  background:#06080f;
+  color:white;
+  font-family:sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+#app { display:none; text-align:center; }
+
+.loader {
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader" class="loader">
+  <h1>KaraWeb</h1>
+  <p>Chargement...</p>
+</div>
+
+<!-- App -->
+<div id="app">
+  <h1 id="welcome">Bienvenue</h1>
+  <p>Connexion réussie ✅</p>
+  <button onclick="logout()">Se déconnecter</button>
+</div>
+
 <script>
 var AUTH = 'https://ykarali2004.github.io/karaweb/auth.html';
 
@@ -6,104 +49,59 @@ var db = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
 );
 
-function showApp(user) {
-  var name =
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    user.email?.split('@')[0] ||
-    'Client';
-
-  var shortName = name.split(' ')[0];
-  var initials = name
-    .split(' ')
-    .map(function(part) { return part[0]; })
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
-  var ls = document.getElementById('ls');
-  var app = document.getElementById('app');
-
-  if (ls) ls.style.display = 'none';
-  if (app) app.style.display = 'flex';
-
-  if (document.getElementById('unn')) {
-    document.getElementById('unn').textContent = name;
-  }
-  if (document.getElementById('greeting')) {
-    document.getElementById('greeting').textContent = shortName;
-  }
-  if (document.getElementById('ua')) {
-    document.getElementById('ua').textContent = initials;
-  }
-  if (document.getElementById('p-name')) {
-    document.getElementById('p-name').value = name;
-  }
-  if (document.getElementById('p-email')) {
-    document.getElementById('p-email').value = user.email || '';
-  }
-  if (document.getElementById('tdate')) {
-    document.getElementById('tdate').textContent = new Date().toLocaleDateString(
-      'fr-FR',
-      { weekday: 'long', day: 'numeric', month: 'long' }
-    );
-  }
-
-  if (document.getElementById('acc-cmds')) {
-    document.getElementById('acc-cmds').innerHTML =
-      '<div class="empty"><div class="ico">✅</div><h3>Connexion réussie</h3><p>Votre dashboard est maintenant accessible.</p></div>';
-  }
-  if (document.getElementById('all-cmds')) {
-    document.getElementById('all-cmds').innerHTML =
-      '<div class="empty"><div class="ico">📦</div><h3>Aucune commande</h3><p>Vous pourrez brancher vos vraies données après.</p></div>';
-  }
-  if (document.getElementById('chat-projs')) {
-    document.getElementById('chat-projs').innerHTML =
-      '<div style="padding:16px;color:#64748b;font-size:.82rem;text-align:center">Aucun projet</div>';
-  }
-}
-
 async function boot() {
   try {
-    var hash = window.location.hash || '';
-    var params = new URLSearchParams(hash.replace(/^#/, ''));
+    // 🔥 récupérer token depuis URL
+    var hash = window.location.hash;
+    var params = new URLSearchParams(hash.replace('#',''));
+
     var access_token = params.get('access_token');
     var refresh_token = params.get('refresh_token');
 
     if (access_token && refresh_token) {
-      const result = await db.auth.setSession({
+      await db.auth.setSession({
         access_token: access_token,
         refresh_token: refresh_token
       });
 
-      if (result.error) {
-        console.error('Erreur setSession:', result.error);
-        window.location.replace(AUTH);
-        return;
-      }
-
+      // nettoyer URL
       history.replaceState({}, document.title, window.location.pathname);
     }
 
-    const { data, error } = await db.auth.getUser();
+    // récupérer user
+    const { data } = await db.auth.getUser();
 
-    if (error || !data || !data.user) {
-      console.error('Utilisateur non trouvé:', error);
-      window.location.replace(AUTH);
+    if (!data || !data.user) {
+      window.location.href = AUTH;
       return;
     }
 
-    showApp(data.user);
+    // afficher app
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    var user = data.user;
+
+    var name =
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email;
+
+    document.getElementById('welcome').textContent = "Bienvenue " + name;
+
   } catch (e) {
-    console.error('Erreur dashboard:', e);
-    window.location.replace(AUTH);
+    console.error(e);
+    window.location.href = AUTH;
   }
 }
 
 async function logout() {
   await db.auth.signOut();
-  window.location.replace(AUTH);
+  window.location.href = AUTH;
 }
 
 boot();
 </script>
+
+</body>
+</html>
