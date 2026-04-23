@@ -151,7 +151,9 @@ function doRegister() {
 function doGoogle() {
   db.auth.signInWithOAuth({
     provider: 'google',
-    options: {redirectTo: DASH}
+    options: {redirectTo: 'https://ykarali2004.github.io/karaweb/callback.html'}
+  });
+}
   });
 }
 </script>
