@@ -1,185 +1,622 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>KaraWeb Admin</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KaraWeb – Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#06080f;
+      --bg2:#0d1220;
+      --card:#111827;
+      --border:rgba(255,255,255,.08);
+      --text:#e5edf7;
+      --muted:#8da0b8;
+      --cyan:#00e7ff;
+      --violet:#8b5cf6;
+      --green:#22c55e;
+      --red:#ef4444;
+    }
 
-<style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#0b0f1a;
-  color:white;
-}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
 
-.layout {
-  display:flex;
-  height:100vh;
-}
+    body{
+      font-family:Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(0,231,255,.08), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(139,92,246,.10), transparent 25%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
 
-.sidebar {
-  width:250px;
-  background:#111827;
-  padding:20px;
-}
+    .loader-wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
 
-.sidebar h2 {
-  color:#00e7ff;
-}
+    .loader-box{
+      width:100%;
+      max-width:520px;
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:32px;
+      text-align:center;
+      box-shadow:0 20px 60px rgba(0,0,0,.35);
+    }
 
-.nav button {
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border:none;
-  background:#1f2937;
-  color:white;
-  cursor:pointer;
-  border-radius:8px;
-}
+    .brand{
+      font-size:38px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0 0 12px;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
 
-.nav button:hover {
-  background:#374151;
-}
+    #app{display:none}
 
-.main {
-  flex:1;
-  padding:30px;
-  overflow:auto;
-}
+    .layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
+    }
 
-.card {
-  background:#111827;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-}
+    .sidebar{
+      background:rgba(10,14,24,.92);
+      border-right:1px solid var(--border);
+      padding:22px;
+    }
 
-.list-item {
-  background:#1f2937;
-  padding:15px;
-  margin-bottom:10px;
-  border-radius:10px;
-}
-</style>
+    .logo{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0 0 24px;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .tag{
+      display:inline-block;
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      margin-bottom:24px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .nav button{
+      width:100%;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-size:15px;
+      transition:.2s ease;
+    }
+
+    .nav button:hover{
+      border-color:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.03);
+    }
+
+    .nav button.active{
+      background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));
+      border-color:rgba(0,231,255,.18);
+    }
+
+    .admin-card{
+      margin-top:24px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .admin-name{
+      font-size:18px;
+      font-weight:700;
+      margin:0 0 6px;
+    }
+
+    .admin-mail{
+      font-size:13px;
+      color:var(--muted);
+      word-break:break-word;
+      margin:0 0 14px;
+    }
+
+    .btn{
+      width:100%;
+      border:0;
+      padding:12px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      margin-top:10px;
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      color:#061018;
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:#000;
+    }
+
+    .main{
+      padding:28px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+
+    .title{
+      margin:0;
+      font-size:34px;
+      letter-spacing:-1px;
+    }
+
+    .subtitle{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+      margin-bottom:24px;
+    }
+
+    .card{
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .small-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .big-number{
+      font-size:34px;
+      font-weight:800;
+      letter-spacing:-1px;
+      margin:0;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .section-title{
+      font-size:22px;
+      margin:0 0 14px;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+    }
+
+    .item{
+      background:rgba(17,24,39,.88);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:18px;
+    }
+
+    .item-title{
+      font-size:18px;
+      font-weight:700;
+      margin:0 0 8px;
+    }
+
+    .item-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin:0;
+    }
+
+    .badge{
+      display:inline-block;
+      margin-top:10px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .badge.pending{
+      background:rgba(245,158,11,.14);
+      color:#fbbf24;
+      border:1px solid rgba(245,158,11,.18);
+    }
+
+    .badge.progress{
+      background:rgba(0,231,255,.12);
+      color:var(--cyan);
+      border:1px solid rgba(0,231,255,.16);
+    }
+
+    .badge.done{
+      background:rgba(34,197,94,.12);
+      color:#86efac;
+      border:1px solid rgba(34,197,94,.18);
+    }
+
+    .badge.cancelled{
+      background:rgba(239,68,68,.12);
+      color:#fca5a5;
+      border:1px solid rgba(239,68,68,.18);
+    }
+
+    .placeholder{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{border-right:0;border-bottom:1px solid var(--border)}
+      .grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 680px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="layout">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>KaraWeb Admin</h2>
-
-    <div class="nav">
-      <button onclick="showPage('dashboard')">Dashboard</button>
-      <button onclick="showPage('clients')">Clients</button>
-      <button onclick="showPage('orders')">Commandes</button>
-      <button onclick="showPage('messages')">Messages</button>
+  <div id="loader" class="loader-wrap">
+    <div class="loader-box">
+      <h1 class="brand">KaraWeb</h1>
+      <div>Chargement de l’espace administrateur...</div>
     </div>
   </div>
 
-  <!-- MAIN -->
-  <div class="main">
+  <div id="app">
+    <div class="layout">
+      <aside class="sidebar">
+        <h1 class="logo">KaraWeb</h1>
+        <div class="tag">Administration</div>
 
-    <!-- DASHBOARD -->
-    <div id="page-dashboard">
-      <div class="card">
-        <h2>Dashboard</h2>
-        <p id="stats">Chargement...</p>
-      </div>
+        <div class="nav">
+          <button class="nav-btn active" data-page="overview" type="button">Vue d’ensemble</button>
+          <button class="nav-btn" data-page="orders" type="button">Commandes</button>
+          <button class="nav-btn" data-page="clients" type="button">Clients</button>
+          <button class="nav-btn" data-page="messages" type="button">Conversations</button>
+        </div>
+
+        <div class="admin-card">
+          <p class="admin-name" id="adminName">Admin</p>
+          <p class="admin-mail" id="adminEmail">...</p>
+          <button class="btn btn-primary" onclick="goClient()">Espace client</button>
+          <button class="btn btn-secondary" onclick="logout()">Se déconnecter</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <h2 class="title">Administration KaraWeb</h2>
+            <p class="subtitle" id="adminSubtitle">Chargement de votre compte administrateur...</p>
+          </div>
+        </div>
+
+        <section id="page-overview" class="page active">
+          <div class="grid">
+            <div class="card">
+              <div class="small-label">Clients</div>
+              <p class="big-number" id="clientsCount">0</p>
+            </div>
+            <div class="card">
+              <div class="small-label">Commandes</div>
+              <p class="big-number" id="ordersCount">0</p>
+            </div>
+            <div class="card">
+              <div class="small-label">Admins</div>
+              <p class="big-number" id="adminsCount">0</p>
+            </div>
+            <div class="card">
+              <div class="small-label">En cours</div>
+              <p class="big-number" id="inProgressCount">0</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-orders" class="page">
+          <h3 class="section-title">Toutes les commandes</h3>
+          <div id="ordersList" class="list">
+            <div class="item">
+              <h4 class="item-title">Chargement...</h4>
+              <p class="item-text">Récupération des commandes.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-clients" class="page">
+          <h3 class="section-title">Tous les clients</h3>
+          <div id="profilesList" class="list">
+            <div class="item">
+              <h4 class="item-title">Chargement...</h4>
+              <p class="item-text">Récupération des profils.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="page-messages" class="page">
+          <h3 class="section-title">Conversations</h3>
+          <div class="card">
+            <p class="placeholder">
+              La messagerie réelle sera branchée ensuite ici.  
+              Cette section est prête pour afficher les conversations clients.
+            </p>
+          </div>
+        </section>
+      </main>
     </div>
-
-    <!-- CLIENTS -->
-    <div id="page-clients" style="display:none;">
-      <div class="card">
-        <h2>Clients</h2>
-        <div id="clientsList"></div>
-      </div>
-    </div>
-
-    <!-- COMMANDES -->
-    <div id="page-orders" style="display:none;">
-      <div class="card">
-        <h2>Commandes</h2>
-        <div id="ordersList"></div>
-      </div>
-    </div>
-
-    <!-- MESSAGES -->
-    <div id="page-messages" style="display:none;">
-      <div class="card">
-        <h2>Conversations</h2>
-        <p>Messagerie à connecter ensuite</p>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-const client = supabase.createClient(
-  'https://midkwlribyrryremnnyd.supabase.co',
-  'TA CLE API'
-);
+  <script>
+    const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
+    const DASHBOARD_URL = 'https://ykarali2004.github.io/karaweb/dashboard.html';
+    const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
-function showPage(page) {
-  document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display='none');
-  document.getElementById('page-' + page).style.display='block';
-}
+    const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-async function loadDashboard() {
-  const { data: orders } = await client.from('commandes').select('*');
-  const { data: users } = await client.from('profiles').select('*');
+    function getStatusClass(status) {
+      if (!status) return 'pending';
+      const s = status.toLowerCase();
+      if (s.includes('cours')) return 'progress';
+      if (s.includes('livr')) return 'done';
+      if (s.includes('annul')) return 'cancelled';
+      if (s.includes('attente')) return 'pending';
+      return 'pending';
+    }
 
-  document.getElementById('stats').innerHTML =
-    "Clients: " + users.length + "<br>Commandes: " + orders.length;
-}
+    function setActivePage(pageName) {
+      document.querySelectorAll('.page').forEach(function(page) {
+        page.classList.remove('active');
+      });
 
-async function loadClients() {
-  const { data } = await client.from('profiles').select('*');
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+      });
 
-  document.getElementById('clientsList').innerHTML =
-    data.map(c => `
-      <div class="list-item">
-        <strong>${c.full_name}</strong><br>
-        ${c.id}<br>
-        Rôle: ${c.role}
-      </div>
-    `).join('');
-}
+      const targetPage = document.getElementById('page-' + pageName);
+      const targetBtn = document.querySelector('.nav-btn[data-page="' + pageName + '"]');
 
-async function loadOrders() {
-  const { data } = await client.from('commandes').select('*');
+      if (targetPage) targetPage.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+    }
 
-  document.getElementById('ordersList').innerHTML =
-    data.map(o => `
-      <div class="list-item">
-        <strong>${o.titre}</strong><br>
-        ${o.description}<br>
-        ${o.prix} €<br>
-        ${o.statut}
-      </div>
-    `).join('');
-}
+    function bindNavigation() {
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const pageName = btn.getAttribute('data-page');
+          setActivePage(pageName);
+        });
+      });
+    }
 
-async function init() {
-  const { data } = await client.auth.getUser();
+    function goClient() {
+      window.location.href = DASHBOARD_URL;
+    }
 
-  if (!data.user) {
-    window.location.href = "auth.html";
-    return;
-  }
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = AUTH_URL;
+    }
 
-  loadDashboard();
-  loadClients();
-  loadOrders();
-}
+    async function loadProfiles() {
+      const profilesList = document.getElementById('profilesList');
 
-init();
-</script>
+      const { data, error } = await client
+        .from('profiles')
+        .select('id, full_name, role')
+        .order('full_name', { ascending: true });
 
+      if (error) {
+        profilesList.innerHTML = `
+          <div class="item">
+            <h4 class="item-title">Erreur</h4>
+            <p class="item-text">${error.message}</p>
+          </div>
+        `;
+        return [];
+      }
+
+      document.getElementById('clientsCount').textContent = String(
+        data.filter(p => (p.role || 'client') === 'client').length
+      );
+      document.getElementById('adminsCount').textContent = String(
+        data.filter(p => (p.role || 'client') === 'admin').length
+      );
+
+      if (!data || data.length === 0) {
+        profilesList.innerHTML = `
+          <div class="item">
+            <h4 class="item-title">Aucun profil</h4>
+            <p class="item-text">Aucun utilisateur trouvé.</p>
+          </div>
+        `;
+        return [];
+      }
+
+      profilesList.innerHTML = data.map(function(profile) {
+        return `
+          <div class="item">
+            <h4 class="item-title">${profile.full_name || 'Utilisateur sans nom'}</h4>
+            <p class="item-text">
+              ID : ${profile.id}<br>
+              Rôle : ${profile.role || 'client'}
+            </p>
+          </div>
+        `;
+      }).join('');
+
+      return data;
+    }
+
+    async function loadOrders() {
+      const ordersList = document.getElementById('ordersList');
+
+      const { data, error } = await client
+        .from('commandes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        ordersList.innerHTML = `
+          <div class="item">
+            <h4 class="item-title">Erreur</h4>
+            <p class="item-text">${error.message}</p>
+          </div>
+        `;
+        return [];
+      }
+
+      document.getElementById('ordersCount').textContent = String(data?.length || 0);
+
+      const inProgress = (data || []).filter(function(order) {
+        return (order.statut || '').toLowerCase().includes('cours');
+      }).length;
+
+      document.getElementById('inProgressCount').textContent = String(inProgress);
+
+      if (!data || data.length === 0) {
+        ordersList.innerHTML = `
+          <div class="item">
+            <h4 class="item-title">Aucune commande</h4>
+            <p class="item-text">Aucune commande enregistrée.</p>
+          </div>
+        `;
+        return [];
+      }
+
+      ordersList.innerHTML = data.map(function(order) {
+        const badgeClass = getStatusClass(order.statut);
+        const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
+
+        return `
+          <div class="item">
+            <h4 class="item-title">${order.titre || 'Commande sans titre'}</h4>
+            <p class="item-text">
+              Client ID : ${order.client_id || '—'}<br>
+              Type : ${order.type_projet || '—'}<br>
+              Plan : ${order.plan || '—'}<br>
+              Description : ${order.description || '—'}<br>
+              Prix : ${prix}
+            </p>
+            <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
+          </div>
+        `;
+      }).join('');
+
+      return data;
+    }
+
+    async function boot() {
+      try {
+        const hash = window.location.hash.startsWith('#')
+          ? window.location.hash.slice(1)
+          : window.location.hash;
+
+        const params = new URLSearchParams(hash);
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
+
+        if (access_token && refresh_token) {
+          const { error: setError } = await client.auth.setSession({
+            access_token,
+            refresh_token
+          });
+
+          if (setError) {
+            window.location.href = AUTH_URL;
+            return;
+          }
+
+          history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const { data: userData, error: userError } = await client.auth.getUser();
+
+        if (userError || !userData || !userData.user) {
+          window.location.href = AUTH_URL;
+          return;
+        }
+
+        const user = userData.user;
+
+        const { data: profile, error: profileError } = await client
+          .from('profiles')
+          .select('id, full_name, role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profileError || !profile || profile.role !== 'admin') {
+          window.location.href = DASHBOARD_URL;
+          return;
+        }
+
+        document.getElementById('adminName').textContent = profile.full_name || user.email || 'Admin';
+        document.getElementById('adminEmail').textContent = user.email || '';
+        document.getElementById('adminSubtitle').textContent =
+          'Connecté en tant qu’administrateur : ' + (profile.full_name || user.email || 'Admin');
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+
+        bindNavigation();
+        await loadOrders();
+        await loadProfiles();
+      } catch (e) {
+        console.error(e);
+        window.location.href = AUTH_URL;
+      }
+    }
+
+    boot();
+  </script>
 </body>
 </html>
