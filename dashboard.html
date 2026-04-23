@@ -692,6 +692,7 @@
       bindNavigation();
       bindFakeChat();
       bindFakeProfileSave();
+      loadOrders(user);
     }
 
     async function boot() {
@@ -742,6 +743,46 @@
     }
 
     boot();
-  </script>
+function getStatusClass(status) {
+  if (!status) return 'pending';
+
+  const s = status.toLowerCase();
+
+  if (s.includes('cours')) return 'progress';
+  if (s.includes('livr')) return 'done';
+  if (s.includes('attente')) return 'pending';
+  return 'pending';
+}
+
+async function loadOrders(user) {
+  const ordersList = document.getElementById('ordersList');
+  if (!ordersList) return;
+
+  ordersList.innerHTML = "Chargement...";
+
+  const { data, error } = await client
+    .from('commandes')
+    .select('*')
+    .eq('client_id', user.id);
+
+  if (error) {
+    ordersList.innerHTML = "Erreur : " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    ordersList.innerHTML = "Aucune commande";
+    return;
+  }
+
+  ordersList.innerHTML = data.map(order => `
+    <div>
+      <h3>${order.titre}</h3>
+      <p>${order.description}</p>
+      <p>${order.prix} €</p>
+      <strong>${order.statut}</strong>
+    </div>
+  `).join('');
+}  </script>
 </body>
 </html>
