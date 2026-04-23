@@ -4,15 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KaraWeb – Mon espace</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-:root {
-  --bg:#06080f;--bg2:#0a0d18;--bg3:#0f1220;--card:#111827;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
-  --cyan:#00f0ff;--violet:#a855f7;--green:#22d3a5;--orange:#fb923c;--red:#f87171;
-  --text:#e2e8f0;--muted:#4a5568;--muted2:#64748b;
-}
+:root{--bg:#06080f;--bg2:#0a0d18;--bg3:#0f1220;--card:#111827;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);--cyan:#00f0ff;--violet:#a855f7;--green:#22d3a5;--orange:#fb923c;--red:#f87171;--text:#e2e8f0;--muted:#4a5568;--muted2:#64748b}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;overflow:hidden}
@@ -34,17 +29,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .ni.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--cyan);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(0,240,255,.5)}
 .ni-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background:rgba(255,255,255,.04);flex-shrink:0}
 .ni.active .ni-ic{background:rgba(0,240,255,.1)}
-.sb{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border)}
+.sbb{margin-top:auto;padding:16px 12px;border-top:1px solid var(--border)}
 .uc{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
 .ur{display:flex;align-items:center;gap:10px}
 .ua{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--violet));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:#000;flex-shrink:0}
-.un{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ub{display:inline-flex;align-items:center;background:rgba(34,211,165,.1);border:1px solid rgba(34,211,165,.2);color:var(--green);font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:100px;margin-top:3px;text-transform:uppercase}
-.bl{width:100%;padding:9px;border-radius:8px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:background .2s}
-.bl:hover{background:rgba(248,113,113,.12)}
+.unn{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ubadge{display:inline-flex;background:rgba(34,211,165,.1);border:1px solid rgba(34,211,165,.2);color:var(--green);font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:100px;margin-top:3px;text-transform:uppercase}
+.btnlo{width:100%;padding:9px;border-radius:8px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.12);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer}
+.btnlo:hover{background:rgba(248,113,113,.12)}
 .main{flex:1;overflow-y:auto;height:100vh}
-.main::-webkit-scrollbar{width:4px}
-.main::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 .pw{padding:36px 40px;min-height:100%}
 .page{display:none;animation:fi .25s ease}
 .page.active{display:block}
@@ -52,8 +45,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .tb{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
 .pt{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
 .pt span{background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.ps{color:var(--muted2);font-size:.88rem;margin-top:3px}
-.td{font-size:.8rem;color:var(--muted2);background:var(--bg3);border:1px solid var(--border);padding:6px 14px;border-radius:8px}
+.pss{color:var(--muted2);font-size:.88rem;margin-top:3px}
+.tdate{font-size:.8rem;color:var(--muted2);background:var(--bg3);border:1px solid var(--border);padding:6px 14px;border-radius:8px}
 .kg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
 .kc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;transition:transform .2s}
 .kc:hover{transform:translateY(-2px)}
@@ -70,9 +63,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .kv{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:-1px;line-height:1}
 .c1{color:var(--cyan)}.c2{color:var(--violet)}.c3{color:var(--green)}
 .kd{font-size:.78rem;color:var(--muted2);margin-top:4px}
-.st{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.st::after{content:'';flex:1;height:1px;background:var(--border)}
-.cl{display:flex;flex-direction:column;gap:10px}
+.stt{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.stt::after{content:'';flex:1;height:1px;background:var(--border)}
+.clist{display:flex;flex-direction:column;gap:10px}
 .cc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .cc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;opacity:0;transition:opacity .2s}
 .cc:hover{border-color:var(--border2);transform:translateX(4px)}
@@ -81,52 +74,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .cc.en_attente::before{background:var(--orange)}
 .cc.livre::before{background:var(--green)}
 .cc.annule::before{background:var(--red)}
-.cmdl{display:flex;align-items:center;gap:14px}
-.cmdi{width:42px;height:42px;border-radius:11px;background:rgba(0,240,255,.07);border:1px solid rgba(0,240,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.cmdt{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:3px}
-.cmdm{font-size:.78rem;color:var(--muted2)}
-.cmdr{display:flex;align-items:center;gap:14px}
-.badge{padding:4px 12px;border-radius:100px;font-size:.72rem;font-weight:700;font-family:'Syne',sans-serif;white-space:nowrap}
-.badge-en_attente{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2)}
-.badge-en_cours{background:rgba(0,240,255,.08);color:var(--cyan);border:1px solid rgba(0,240,255,.2)}
-.badge-livre{background:rgba(34,211,165,.08);color:var(--green);border:1px solid rgba(34,211,165,.2)}
-.badge-annule{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.2)}
-.ca{color:var(--muted);transition:transform .2s}
-.cc:hover .ca{transform:translateX(3px);color:var(--text)}
-.es{text-align:center;padding:52px 24px;background:var(--card);border:1px dashed var(--border2);border-radius:16px}
-.ee{font-size:2.5rem;margin-bottom:14px}
-.et{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px}
-.em{color:var(--muted2);font-size:.88rem}
+.cl{display:flex;align-items:center;gap:14px}
+.ci{width:42px;height:42px;border-radius:11px;background:rgba(0,240,255,.07);border:1px solid rgba(0,240,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ctt{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:3px}
+.cm{font-size:.78rem;color:var(--muted2)}
+.cr{display:flex;align-items:center;gap:14px}
+.bdg{padding:4px 12px;border-radius:100px;font-size:.72rem;font-weight:700;font-family:'Syne',sans-serif;white-space:nowrap}
+.bdg.en_attente{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2)}
+.bdg.en_cours{background:rgba(0,240,255,.08);color:var(--cyan);border:1px solid rgba(0,240,255,.2)}
+.bdg.livre{background:rgba(34,211,165,.08);color:var(--green);border:1px solid rgba(34,211,165,.2)}
+.bdg.annule{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.arr{color:var(--muted);transition:transform .2s}
+.cc:hover .arr{transform:translateX(3px);color:var(--text)}
+.empty{text-align:center;padding:52px 24px;background:var(--card);border:1px dashed var(--border2);border-radius:16px}
+.empty .ico{font-size:2.5rem;margin-bottom:14px}
+.empty h3{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px}
+.empty p{color:var(--muted2);font-size:.88rem}
 .chat-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;height:calc(100vh - 180px)}
-.chat-left{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-y:auto;display:flex;flex-direction:column}
+.chat-l{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-y:auto;display:flex;flex-direction:column}
 .chat-lh{padding:16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem}
 .chat-pi{padding:12px 16px;cursor:pointer;transition:background .15s;border-left:3px solid transparent}
 .chat-pi:hover{background:rgba(255,255,255,.03)}
 .chat-pi.active{background:rgba(0,240,255,.05);border-left-color:var(--cyan)}
 .chat-pn{font-weight:600;font-size:.88rem;margin-bottom:2px}
 .chat-ps{font-size:.75rem;color:var(--muted2)}
-.chat-right{background:var(--card);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+.chat-r{background:var(--card);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
 .chat-hb{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg3)}
 .chat-ha{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--violet));display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
 .chat-hn{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}
 .chat-ho{font-size:.72rem;color:var(--green)}
-.chat-msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
-.chat-msgs::-webkit-scrollbar{width:3px}
-.chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .mw{display:flex;flex-direction:column}
 .mw.sent{align-items:flex-end}
 .mw.recv{align-items:flex-start}
 .mb{max-width:68%;padding:10px 14px;border-radius:14px;font-size:.88rem;line-height:1.55}
 .mw.sent .mb{background:linear-gradient(135deg,rgba(0,240,255,.12),rgba(168,85,247,.12));border:1px solid rgba(0,240,255,.18);border-bottom-right-radius:4px}
 .mw.recv .mb{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:4px}
-.mt{font-size:.68rem;color:var(--muted2);margin-top:4px;padding:0 4px}
+.mtt{font-size:.68rem;color:var(--muted2);margin-top:4px;padding:0 4px}
 .chat-ib{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;background:var(--bg3)}
 .chat-ta{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;resize:none;max-height:100px;transition:border-color .2s}
 .chat-ta:focus{border-color:rgba(0,240,255,.3)}
 .chat-sb{padding:10px 18px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer}
-.chat-sb:hover{opacity:.85}
-.chat-es{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted2);gap:10px}
-.chat-es .big{font-size:2rem}
+.chat-es{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted2);gap:10px;font-size:.9rem}
 .pg{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:780px}
 .pc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px}
 .pc.full{grid-column:1/-1}
@@ -136,8 +127,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .ff input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
 .ff input:focus{border-color:rgba(0,240,255,.35)}
 .ff input:disabled{opacity:.4;cursor:not-allowed}
-.bsv{padding:10px 24px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;margin-top:6px}
-.bsv:hover{opacity:.85}
+.btnsv{padding:10px 24px;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;margin-top:6px}
+.btnsv:hover{opacity:.85}
 .ir{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:.88rem}
 .ir:last-child{border-bottom:none}
 .ir .lb{color:var(--muted2)}
@@ -145,10 +136,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 </head>
 <body>
 
-<div id="ls">
-  <div class="ll">KaraWeb</div>
-  <div class="sp"></div>
-</div>
+<div id="ls"><div class="ll">KaraWeb</div><div class="sp"></div></div>
 
 <div id="app">
   <aside class="sidebar">
@@ -158,22 +146,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
     </div>
     <div class="ns">
       <div class="nl">Navigation</div>
-      <button class="ni active" onclick="showPage('accueil',this)"><div class="ni-ic">🏠</div>Accueil</button>
-      <button class="ni" onclick="showPage('commandes',this)"><div class="ni-ic">📦</div>Mes commandes</button>
-      <button class="ni" onclick="showPage('messages',this)"><div class="ni-ic">💬</div>Messages</button>
-      <button class="ni" onclick="showPage('profil',this)"><div class="ni-ic">👤</div>Mon profil</button>
+      <button class="ni active" id="nav-accueil" onclick="goPage('accueil')"><div class="ni-ic">🏠</div>Accueil</button>
+      <button class="ni" id="nav-commandes" onclick="goPage('commandes')"><div class="ni-ic">📦</div>Mes commandes</button>
+      <button class="ni" id="nav-messages" onclick="goPage('messages')"><div class="ni-ic">💬</div>Messages</button>
+      <button class="ni" id="nav-profil" onclick="goPage('profil')"><div class="ni-ic">👤</div>Mon profil</button>
     </div>
-    <div class="sb">
+    <div class="sbb">
       <div class="uc">
         <div class="ur">
           <div class="ua" id="ua">?</div>
-          <div style="min-width:0">
-            <div class="un" id="un">…</div>
-            <div class="ub">● Client</div>
-          </div>
+          <div style="min-width:0"><div class="unn" id="unn">…</div><div class="ubadge">● Client</div></div>
         </div>
       </div>
-      <button class="bl" onclick="logout()">Déconnexion</button>
+      <button class="btnlo" onclick="logout()">Déconnexion</button>
     </div>
   </aside>
 
@@ -182,41 +167,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 
       <div class="page active" id="page-accueil">
         <div class="tb">
-          <div>
-            <div class="pt">Bonjour, <span id="greeting">…</span> 👋</div>
-            <div class="ps">Bienvenue dans votre espace KaraWeb</div>
-          </div>
-          <div class="td" id="tdate"></div>
+          <div><div class="pt">Bonjour, <span id="greeting">…</span> 👋</div><div class="pss">Bienvenue dans votre espace KaraWeb</div></div>
+          <div class="tdate" id="tdate"></div>
         </div>
         <div class="kg">
-          <div class="kc k1"><div class="kt"><div class="kl">Projets actifs</div><div class="ki i1">⚡</div></div><div class="kv c1" id="k1">–</div><div class="kd">En cours</div></div>
-          <div class="kc k2"><div class="kt"><div class="kl">Sites livrés</div><div class="ki i2">🚀</div></div><div class="kv c2" id="k2">–</div><div class="kd">Terminés</div></div>
-          <div class="kc k3"><div class="kt"><div class="kl">Total projets</div><div class="ki i3">📋</div></div><div class="kv c3" id="k3">–</div><div class="kd">Depuis le début</div></div>
+          <div class="kc k1"><div class="kt"><div class="kl">Projets actifs</div><div class="ki i1">⚡</div></div><div class="kv c1" id="kpi1">–</div><div class="kd">En cours</div></div>
+          <div class="kc k2"><div class="kt"><div class="kl">Sites livrés</div><div class="ki i2">🚀</div></div><div class="kv c2" id="kpi2">–</div><div class="kd">Terminés</div></div>
+          <div class="kc k3"><div class="kt"><div class="kl">Total projets</div><div class="ki i3">📋</div></div><div class="kv c3" id="kpi3">–</div><div class="kd">Depuis le début</div></div>
         </div>
-        <div class="st">Dernières commandes</div>
-        <div id="acc-cmd"></div>
+        <div class="stt">Dernières commandes</div>
+        <div id="acc-cmds"></div>
       </div>
 
       <div class="page" id="page-commandes">
-        <div class="tb"><div><div class="pt">Mes <span>commandes</span></div><div class="ps">Suivez vos projets</div></div></div>
-        <div id="cmd-content"></div>
+        <div class="tb"><div><div class="pt">Mes <span>commandes</span></div><div class="pss">Suivez vos projets</div></div></div>
+        <div id="all-cmds"></div>
       </div>
 
       <div class="page" id="page-messages">
-        <div class="tb"><div><div class="pt">Mes <span>messages</span></div><div class="ps">Discutez avec KaraWeb</div></div></div>
+        <div class="tb"><div><div class="pt">Mes <span>messages</span></div><div class="pss">Discutez avec KaraWeb</div></div></div>
         <div class="chat-layout">
-          <div class="chat-left">
-            <div class="chat-lh">💬 Projets</div>
-            <div id="chat-proj-list"></div>
-          </div>
-          <div class="chat-right" id="chat-right">
-            <div class="chat-es"><div class="big">💬</div><p>Sélectionnez un projet</p></div>
-          </div>
+          <div class="chat-l"><div class="chat-lh">💬 Projets</div><div id="chat-projs"></div></div>
+          <div class="chat-r" id="chat-r"><div class="chat-es"><div style="font-size:2rem">💬</div><p>Sélectionnez un projet</p></div></div>
         </div>
       </div>
 
       <div class="page" id="page-profil">
-        <div class="tb"><div><div class="pt">Mon <span>profil</span></div><div class="ps">Gérez vos informations</div></div></div>
+        <div class="tb"><div><div class="pt">Mon <span>profil</span></div><div class="pss">Gérez vos informations</div></div></div>
         <div class="pg">
           <div class="pc full">
             <div class="pct">✏️ Informations personnelles</div>
@@ -226,7 +203,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
               <div class="ff"><label>Entreprise</label><input type="text" id="p-company" placeholder="Votre société"></div>
               <div class="ff"><label>Téléphone</label><input type="tel" id="p-phone" placeholder="+32 xxx xx xx xx"></div>
             </div>
-            <button class="bsv" onclick="saveProfil()">Sauvegarder</button>
+            <button class="btnsv" onclick="saveProfil()">Sauvegarder</button>
           </div>
           <div class="pc">
             <div class="pct">🔒 Compte</div>
@@ -236,9 +213,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
           </div>
           <div class="pc">
             <div class="pct">📦 Résumé</div>
-            <div class="ir"><span class="lb">Actifs</span><span id="p-actifs">–</span></div>
-            <div class="ir"><span class="lb">Livrés</span><span id="p-livres">–</span></div>
-            <div class="ir"><span class="lb">Total</span><span id="p-total">–</span></div>
+            <div class="ir"><span class="lb">Actifs</span><span id="p-a">–</span></div>
+            <div class="ir"><span class="lb">Livrés</span><span id="p-l">–</span></div>
+            <div class="ir"><span class="lb">Total</span><span id="p-t">–</span></div>
           </div>
         </div>
       </div>
@@ -248,6 +225,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 </div>
 
 <script>
+var AUTH = 'https://ykarali2004.github.io/karaweb/auth.html';
 var db = supabase.createClient(
   'https://midkwlribyrryremnnyd.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
@@ -255,22 +233,24 @@ var db = supabase.createClient(
 
 var ME = null;
 var CMDS = [];
-var ACTIVE = null;
+var ACTIVE_CHAT = null;
 var RTC = null;
 
-db.auth.onAuthStateChange(function(event, session) {
-  if (session) {
-    ME = session.user;
-    document.getElementById('ls').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    init();
+// Démarre l'app après vérification session
+db.auth.getSession().then(function(r) {
+  if (r.data && r.data.session) {
+    ME = r.data.session.user;
+    start();
   } else {
-    window.location.href = 'auth.html';
+    // Pas de session → retour auth
+    window.location.replace(AUTH);
   }
 });
 
-function init() {
-  document.getElementById('tdate').textContent = new Date().toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long'});
+function start() {
+  document.getElementById('ls').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('tdate').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   loadProfile();
   loadCmds();
 }
@@ -280,7 +260,7 @@ function loadProfile() {
     var d = r.data;
     var name = (d && d.full_name) ? d.full_name : ME.email.split('@')[0];
     document.getElementById('ua').textContent = name.substring(0,2).toUpperCase();
-    document.getElementById('un').textContent = name;
+    document.getElementById('unn').textContent = name;
     document.getElementById('greeting').textContent = name.split(' ')[0];
     document.getElementById('p-name').value = (d && d.full_name) ? d.full_name : '';
     document.getElementById('p-email').value = ME.email;
@@ -291,115 +271,98 @@ function loadProfile() {
 }
 
 function loadCmds() {
-  db.from('commandes').select('*').eq('client_id', ME.id).order('created_at',{ascending:false}).then(function(r) {
+  db.from('commandes').select('*').eq('client_id',ME.id).order('created_at',{ascending:false}).then(function(r) {
     CMDS = r.data || [];
     var a = CMDS.filter(function(c){return c.statut==='en_cours';}).length;
     var l = CMDS.filter(function(c){return c.statut==='livre';}).length;
-    document.getElementById('k1').textContent = a;
-    document.getElementById('k2').textContent = l;
-    document.getElementById('k3').textContent = CMDS.length;
-    document.getElementById('p-actifs').textContent = a;
-    document.getElementById('p-livres').textContent = l;
-    document.getElementById('p-total').textContent = CMDS.length;
+    document.getElementById('kpi1').textContent = a;
+    document.getElementById('kpi2').textContent = l;
+    document.getElementById('kpi3').textContent = CMDS.length;
+    document.getElementById('p-a').textContent = a;
+    document.getElementById('p-l').textContent = l;
+    document.getElementById('p-t').textContent = CMDS.length;
     renderCmds();
     renderChatProjs();
   });
 }
 
 function sl(s) {
-  return {en_attente:'En attente',en_cours:'En cours ⚡',livre:'Livré ✓',annule:'Annulé'}[s] || s;
+  return {en_attente:'En attente',en_cours:'En cours ⚡',livre:'Livré ✓',annule:'Annulé'}[s]||s;
 }
 
-function cmdHTML(c) {
+function cmdCard(c) {
   var d = new Date(c.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
-  return '<div class="cc '+c.statut+'" onclick="openChat(\''+c.id+'\')">'
-    +'<div class="cmdl"><div class="cmdi">🌐</div><div>'
-    +'<div class="cmdt">'+c.titre+'</div>'
-    +'<div class="cmdm">'+c.type_projet+' · '+d+(c.prix?' · '+c.prix+'€':'')+'</div>'
-    +'</div></div>'
-    +'<div class="cmdr"><span class="badge badge-'+c.statut+'">'+sl(c.statut)+'</span><span class="ca">→</span></div>'
-    +'</div>';
+  return '<div class="cc '+c.statut+'" onclick="openChat(\''+c.id+'\')"><div class="cl"><div class="ci">🌐</div><div><div class="ctt">'+c.titre+'</div><div class="cm">'+c.type_projet+' · '+d+(c.prix?' · '+c.prix+'€':'')+'</div></div></div><div class="cr"><span class="bdg '+c.statut+'">'+sl(c.statut)+'</span><span class="arr">→</span></div></div>';
+}
+
+function emptyCard() {
+  return '<div class="empty"><div class="ico">📦</div><h3>Aucune commande</h3><p>Vos projets apparaîtront ici après votre première demande.</p></div>';
 }
 
 function renderCmds() {
-  var empty = '<div class="es"><div class="ee">📦</div><div class="et">Aucune commande</div><div class="em">Contactez-nous via le formulaire de devis.</div></div>';
-  var html = CMDS.length ? '<div class="cl">'+CMDS.map(cmdHTML).join('')+'</div>' : empty;
-  document.getElementById('cmd-content').innerHTML = html;
-  document.getElementById('acc-cmd').innerHTML = CMDS.length
-    ? '<div class="cl">'+CMDS.slice(0,3).map(cmdHTML).join('')+'</div>'
-    : '<div class="es"><div class="ee">📦</div><div class="et">Aucune commande</div><div class="em">Vos projets apparaîtront ici.</div></div>';
+  var h = CMDS.length ? '<div class="clist">'+CMDS.map(cmdCard).join('')+'</div>' : emptyCard();
+  document.getElementById('all-cmds').innerHTML = h;
+  document.getElementById('acc-cmds').innerHTML = CMDS.length ? '<div class="clist">'+CMDS.slice(0,3).map(cmdCard).join('')+'</div>' : emptyCard();
 }
 
 function renderChatProjs() {
-  var el = document.getElementById('chat-proj-list');
-  if (!CMDS.length) {
-    el.innerHTML = '<div style="padding:16px;color:var(--muted2);font-size:.82rem;text-align:center;">Aucun projet</div>';
-    return;
-  }
+  var el = document.getElementById('chat-projs');
+  if (!CMDS.length) { el.innerHTML = '<div style="padding:16px;color:var(--muted2);font-size:.82rem;text-align:center">Aucun projet</div>'; return; }
   el.innerHTML = CMDS.map(function(c) {
     return '<div class="chat-pi" id="proj-'+c.id+'" onclick="selectChat(\''+c.id+'\',\''+c.titre.replace(/'/g,"\\'")+'\')"><div class="chat-pn">'+c.titre+'</div><div class="chat-ps">'+sl(c.statut)+'</div></div>';
   }).join('');
 }
 
 function selectChat(id, titre) {
-  ACTIVE = id;
-  document.querySelectorAll('.chat-pi').forEach(function(el){el.classList.remove('active');});
+  ACTIVE_CHAT = id;
+  document.querySelectorAll('.chat-pi').forEach(function(e){e.classList.remove('active');});
   var p = document.getElementById('proj-'+id);
   if (p) p.classList.add('active');
-  document.getElementById('chat-right').innerHTML =
+  document.getElementById('chat-r').innerHTML =
     '<div class="chat-hb"><div class="chat-ha">🌐</div><div><div class="chat-hn">'+titre+'</div><div class="chat-ho">● En ligne</div></div></div>'
-    +'<div class="chat-msgs" id="chat-msgs"></div>'
-    +'<div class="chat-ib"><textarea class="chat-ta" id="chat-input" placeholder="Votre message…" rows="1" onkeydown="handleKey(event)"></textarea>'
-    +'<button class="chat-sb" onclick="sendMsg()">Envoyer →</button></div>';
+    +'<div class="msgs" id="msgs"></div>'
+    +'<div class="chat-ib"><textarea class="chat-ta" id="chat-inp" placeholder="Votre message…" rows="1" onkeydown="hkey(event)"></textarea><button class="chat-sb" onclick="sendMsg()">Envoyer →</button></div>';
   loadMsgs(id);
   if (RTC) db.removeChannel(RTC);
-  RTC = db.channel('msgs-'+id)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'commande_id=eq.'+id},function(){loadMsgs(id);})
-    .subscribe();
+  RTC = db.channel('m'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'commande_id=eq.'+id},function(){loadMsgs(id);}).subscribe();
 }
 
-function loadMsgs(cmdId) {
-  db.from('messages').select('*').eq('commande_id',cmdId).order('created_at',{ascending:true}).then(function(r) {
-    var el = document.getElementById('chat-msgs');
+function loadMsgs(cid) {
+  db.from('messages').select('*').eq('commande_id',cid).order('created_at',{ascending:true}).then(function(r) {
+    var el = document.getElementById('msgs');
     if (!el) return;
-    if (!r.data || !r.data.length) {
-      el.innerHTML = '<div style="text-align:center;color:var(--muted2);font-size:.85rem;padding:30px;">Démarrez la conversation 👋</div>';
-      return;
-    }
+    if (!r.data||!r.data.length) { el.innerHTML='<div style="text-align:center;color:var(--muted2);font-size:.85rem;padding:30px">Démarrez la conversation 👋</div>'; return; }
     el.innerHTML = r.data.map(function(m) {
-      var mine = m.sender_id === ME.id;
+      var mine = m.sender_id===ME.id;
       var t = new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-      return '<div class="mw '+(mine?'sent':'recv')+'"><div class="mb">'+m.contenu+'</div><div class="mt">'+(mine?'Vous':'KaraWeb')+' · '+t+'</div></div>';
+      return '<div class="mw '+(mine?'sent':'recv')+'"><div class="mb">'+m.contenu+'</div><div class="mtt">'+(mine?'Vous':'KaraWeb')+' · '+t+'</div></div>';
     }).join('');
     el.scrollTop = el.scrollHeight;
   });
 }
 
 function sendMsg() {
-  var inp = document.getElementById('chat-input');
+  var inp = document.getElementById('chat-inp');
   var txt = inp ? inp.value.trim() : '';
-  if (!txt || !ACTIVE) return;
+  if (!txt||!ACTIVE_CHAT) return;
   inp.value = '';
-  db.from('messages').insert({commande_id:ACTIVE,sender_id:ME.id,contenu:txt});
+  db.from('messages').insert({commande_id:ACTIVE_CHAT,sender_id:ME.id,contenu:txt});
 }
 
-function handleKey(e) {
-  if (e.key==='Enter' && !e.shiftKey) {e.preventDefault();sendMsg();}
+function hkey(e) {
+  if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
 }
 
 function openChat(id) {
   var c = CMDS.find(function(x){return x.id===id;});
-  if (c) {
-    showPage('messages', document.querySelector('.ni:nth-child(3)'));
-    selectChat(c.id, c.titre);
-  }
+  if (c) { goPage('messages'); selectChat(c.id,c.titre); }
 }
 
-function showPage(name, btn) {
+function goPage(name) {
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.ni').forEach(function(b){b.classList.remove('active');});
   document.getElementById('page-'+name).classList.add('active');
-  if (btn) btn.classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
 }
 
 function saveProfil() {
@@ -407,13 +370,13 @@ function saveProfil() {
     full_name: document.getElementById('p-name').value,
     company: document.getElementById('p-company').value,
     phone: document.getElementById('p-phone').value
-  }).eq('id',ME.id).then(function(r) {
-    alert(r.error ? '✗ Erreur' : '✓ Profil sauvegardé !');
+  }).eq('id',ME.id).then(function(r){
+    alert(r.error?'✗ Erreur':'✓ Profil sauvegardé !');
   });
 }
 
 function logout() {
-  db.auth.signOut().then(function(){window.location.href='auth.html';});
+  db.auth.signOut().then(function(){window.location.replace(AUTH);});
 }
 </script>
 </body>
