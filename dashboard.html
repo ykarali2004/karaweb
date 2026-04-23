@@ -439,6 +439,12 @@
       font-size:13px;
     }
 
+    .profile-status{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
     @media (max-width: 980px){
       .layout{grid-template-columns:1fr}
       .sidebar{border-right:0;border-bottom:1px solid var(--border)}
@@ -578,9 +584,10 @@
             </div>
 
             <button class="save-btn" type="button" id="saveProfileBtn">Sauvegarder</button>
+            <div class="profile-status" id="profileStatus">Profil prêt à être modifié.</div>
 
             <div class="note">
-              Pour l’instant, ce bouton ne modifie pas encore la base de données. On peut le brancher ensuite.
+              Le nom est maintenant relié à la table profiles.
             </div>
           </div>
         </section>
@@ -599,6 +606,7 @@
     }
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+    let currentUser = null;
 
     function setActivePage(pageName) {
       document.querySelectorAll('.page').forEach(function(page) {
@@ -651,12 +659,91 @@
       });
     }
 
-    function bindFakeProfileSave() {
+    function setProfileStatus(text) {
+      const el = document.getElementById('profileStatus');
+      if (el) el.textContent = text;
+    }
+
+    function getDisplayName(user, profile) {
+      return (
+        profile?.full_name ||
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.email ||
+        'Client'
+      );
+    }
+
+    async function loadProfile(user) {
+      const { data, error } = await client
+        .from('profiles')
+        .select('id, full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        setProfileStatus('Erreur profil : ' + error.message);
+        return null;
+      }
+
+      const name = getDisplayName(user, data);
+
+      document.getElementById('userName').textContent = name;
+      document.getElementById('userEmail').textContent = user.email || '';
+      document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + name;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = user.email || '';
+      document.getElementById('profileProvider').textContent =
+        user.app_metadata?.provider || 'google';
+
+      document.getElementById('inputName').value = name;
+      document.getElementById('inputEmail').value = user.email || '';
+
+      setProfileStatus('Profil chargé.');
+
+      return data;
+    }
+
+    function bindProfileSave(user) {
       const btn = document.getElementById('saveProfileBtn');
       if (!btn) return;
 
-      btn.addEventListener('click', function() {
-        alert('Le profil visuel est prêt. On branchera la sauvegarde Supabase ensuite.');
+      btn.addEventListener('click', async function() {
+        const inputName = document.getElementById('inputName');
+        const fullName = (inputName.value || '').trim();
+
+        if (!fullName) {
+          setProfileStatus('Le nom ne peut pas être vide.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sauvegarde...';
+        setProfileStatus('Enregistrement du profil...');
+
+        const { error } = await client
+          .from('profiles')
+          .upsert(
+            {
+              id: user.id,
+              full_name: fullName
+            },
+            { onConflict: 'id' }
+          );
+
+        btn.disabled = false;
+        btn.textContent = 'Sauvegarder';
+
+        if (error) {
+          setProfileStatus('Erreur : ' + error.message);
+          return;
+        }
+
+        document.getElementById('userName').textContent = fullName;
+        document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
+        document.getElementById('profileName').textContent = fullName;
+
+        setProfileStatus('Profil sauvegardé avec succès.');
       });
     }
 
@@ -741,31 +828,18 @@
       }).join('');
     }
 
-    function showApp(user) {
-      const name =
-        user.user_metadata?.full_name ||
-        user.user_metadata?.name ||
-        user.email ||
-        'Client';
+    async function showApp(user) {
+      currentUser = user;
 
       document.getElementById('loader').style.display = 'none';
       document.getElementById('app').style.display = 'block';
 
-      document.getElementById('userName').textContent = name;
-      document.getElementById('userEmail').textContent = user.email || '';
-      document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + name;
-      document.getElementById('profileName').textContent = name;
-      document.getElementById('profileEmail').textContent = user.email || '';
-      document.getElementById('profileProvider').textContent =
-        user.app_metadata?.provider || 'google';
-
-      document.getElementById('inputName').value = name;
-      document.getElementById('inputEmail').value = user.email || '';
-
       bindNavigation();
       bindFakeChat();
-      bindFakeProfileSave();
-      loadOrders(user);
+      bindProfileSave(user);
+
+      await loadProfile(user);
+      await loadOrders(user);
     }
 
     async function boot() {
