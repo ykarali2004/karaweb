@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KaraWeb – Mon espace</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #080b12;
+    --bg2: #0d1120;
+    --card: #111827;
+    --border: rgba(255,255,255,0.07);
+    --cyan: #00f0ff;
+    --violet: #a855f7;
+    --pink: #f472b6;
+    --green: #22d3a5;
+    --orange: #fb923c;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 10;
+  }
+  .sidebar-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 0 24px;
+    margin-bottom: 32px;
+    text-decoration: none;
+  }
+  .sidebar-section {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0 24px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 24px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    text-decoration: none;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+  .sidebar-item.active { background: rgba(0,240,255,0.06); color: var(--cyan); border-right: 2px solid var(--cyan); }
+  .sidebar-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  .sidebar-user {
+    margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .user-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #000;
+    flex-shrink: 0;
+  }
+  .user-name { font-weight: 600; font-size: 0.9rem; }
+  .user-role { font-size: 0.75rem; color: var(--muted); }
+  .btn-logout {
+    width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.15);
+    color: #f87171;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-logout:hover { background: rgba(239,68,68,0.15); }
+
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 40px;
+    min-height: 100vh;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header { margin-bottom: 32px; }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .page-sub { color: var(--muted); font-size: 0.92rem; }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .kpi-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .kpi-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; }
+  .kpi-value.cyan { color: var(--cyan); }
+  .kpi-value.violet { color: var(--violet); }
+  .kpi-value.green { color: var(--green); }
+
+  /* COMMANDES */
+  .commandes-list { display: flex; flex-direction: column; gap: 12px; }
+  .commande-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .commande-card:hover { border-color: rgba(0,240,255,0.2); transform: translateX(4px); }
+  .commande-info h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .commande-info p { color: var(--muted); font-size: 0.85rem; }
+  .commande-right { display: flex; align-items: center; gap: 16px; }
+  .statut-badge {
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+  }
+  .statut-en_attente { background: rgba(251,146,60,0.12); color: var(--orange); border: 1px solid rgba(251,146,60,0.2); }
+  .statut-en_cours { background: rgba(0,240,255,0.1); color: var(--cyan); border: 1px solid rgba(0,240,255,0.2); }
+  .statut-livre { background: rgba(34,211,165,0.1); color: var(--green); border: 1px solid rgba(34,211,165,0.2); }
+  .statut-annule { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .commande-arrow { color: var(--muted); font-size: 1.2rem; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .empty-state .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.92rem; }
+
+  /* CHAT */
+  .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; height: calc(100vh - 160px); }
+  .chat-sidebar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .chat-sidebar-title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px; margin-bottom: 4px; }
+  .chat-project-item {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+  }
+  .chat-project-item:hover { background: rgba(255,255,255,0.03); }
+  .chat-project-item.active { background: rgba(0,240,255,0.06); border-color: rgba(0,240,255,0.15); }
+  .chat-project-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
+  .chat-project-last { font-size: 0.78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .chat-window {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .chat-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chat-header-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(0,240,255,0.1);
+    border: 1px solid rgba(0,240,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+  .chat-header-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+  .chat-header-status { font-size: 0.78rem; color: var(--green); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .msg-time { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .msg.sent {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(168,85,247,0.15));
+    border: 1px solid rgba(0,240,255,0.2);
+  }
+  .msg.received {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+  }
+  .msg.received .msg-time { text-align: left; }
+  .msg.sent .msg-time { text-align: right; }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    resize: none;
+    max-height: 100px;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: rgba(0,240,255,0.3); }
+  .chat-send {
+    padding: 11px 18px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border: none;
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .chat-send:hover { opacity: 0.85; }
+
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .chat-empty .emoji { font-size: 2rem; }
+
+  /* PROFIL */
+  .profil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 700px; }
+  .profil-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+  .profil-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 20px; font-size: 1rem; }
+  .profil-field { margin-bottom: 16px; }
+  .profil-field label { display: block; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .profil-field input {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .profil-field input:focus { border-color: rgba(0,240,255,0.4); }
+  .btn-save {
+    padding: 10px 24px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    border: none;
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: opacity 0.2s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+
+  .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">KaraWeb</a>
+
+  <div class="sidebar-section">Menu</div>
+  <button class="sidebar-item active" onclick="showPage('accueil')">
+    <span class="icon">🏠</span> Accueil
+  </button>
+  <button class="sidebar-item" onclick="showPage('commandes')">
+    <span class="icon">📦</span> Mes commandes
+  </button>
+  <button class="sidebar-item" onclick="showPage('messages')">
+    <span class="icon">💬</span> Messages
+  </button>
+  <button class="sidebar-item" onclick="showPage('profil')">
+    <span class="icon">👤</span> Mon profil
+  </button>
+
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div>
+        <div class="user-name" id="user-name">Chargement...</div>
+        <div class="user-role">Client KaraWeb</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Se déconnecter</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- PAGE ACCUEIL -->
+  <div class="page active" id="page-accueil">
+    <div class="page-header">
+      <div class="page-title">Bonjour <span id="greeting-name">👋</span></div>
+      <div class="page-sub">Bienvenue dans votre espace client KaraWeb</div>
+    </div>
+    <div class="cards-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Projets actifs</div>
+        <div class="kpi-value cyan" id="kpi-actifs">–</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Sites livrés</div>
+        <div class="kpi-value green" id="kpi-livres">–</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Messages non lus</div>
+        <div class="kpi-value violet" id="kpi-messages">–</div>
+      </div>
+    </div>
+    <div class="page-header" style="margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;">Dernières commandes</div>
+    </div>
+    <div id="accueil-commandes"><div class="loading">Chargement...</div></div>
+  </div>
+
+  <!-- PAGE COMMANDES -->
+  <div class="page" id="page-commandes">
+    <div class="page-header">
+      <div class="page-title">Mes commandes</div>
+      <div class="page-sub">Suivez l'avancement de vos projets en temps réel</div>
+    </div>
+    <div id="commandes-list"><div class="loading">Chargement...</div></div>
+  </div>
+
+  <!-- PAGE MESSAGES -->
+  <div class="page" id="page-messages">
+    <div class="page-header">
+      <div class="page-title">Messages</div>
+      <div class="page-sub">Discutez directement avec l'équipe KaraWeb</div>
+    </div>
+    <div class="chat-layout">
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-title">Vos projets</div>
+        <div id="chat-projects-list"></div>
+      </div>
+      <div class="chat-window" id="chat-window">
+        <div class="chat-empty">
+          <div class="emoji">💬</div>
+          <div>Sélectionnez un projet pour discuter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE PROFIL -->
+  <div class="page" id="page-profil">
+    <div class="page-header">
+      <div class="page-title">Mon profil</div>
+      <div class="page-sub">Gérez vos informations personnelles</div>
+    </div>
+    <div class="profil-grid">
+      <div class="profil-card" style="grid-column:1/-1">
+        <h3>Informations personnelles</h3>
+        <div class="profil-field">
+          <label>Nom complet</label>
+          <input type="text" id="profil-name" placeholder="Jean Dupont">
+        </div>
+        <div class="profil-field">
+          <label>Email</label>
+          <input type="email" id="profil-email" disabled style="opacity:0.5;cursor:not-allowed;">
+        </div>
+        <div class="profil-field">
+          <label>Entreprise (optionnel)</label>
+          <input type="text" id="profil-company" placeholder="Votre société">
+        </div>
+        <div class="profil-field">
+          <label>Téléphone</label>
+          <input type="tel" id="profil-phone" placeholder="+32 xxx xx xx xx">
+        </div>
+        <button class="btn-save" onclick="saveProfil()">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://midkwlribyrryremnnyd.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_qYmjQmeQoZvAtzMP-bnCOA_hEcu9RjK';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+  let currentProfile = null;
+  let currentCommandes = [];
+  let activeCommandeId = null;
+  let realtimeChannel = null;
+
+  // Init
+  supabase.auth.getSession().then(({ data }) => {
+    if (!data.session) { window.location.href = 'auth.html'; return; }
+    currentUser = data.session.user;
+    initDashboard();
+  });
+
+  async function initDashboard() {
+    await loadProfile();
+    await loadCommandes();
+    updateKPIs();
+  }
+
+  async function loadProfile() {
+    const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+    currentProfile = data;
+    const name = data?.full_name || currentUser.email.split('@')[0];
+    const initials = name.substring(0, 2).toUpperCase();
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('greeting-name').textContent = name.split(' ')[0] + ' 👋';
+    document.getElementById('profil-name').value = data?.full_name || '';
+    document.getElementById('profil-email').value = currentUser.email;
+    document.getElementById('profil-company').value = data?.company || '';
+    document.getElementById('profil-phone').value = data?.phone || '';
+  }
+
+  async function loadCommandes() {
+    const { data } = await supabase.from('commandes').select('*').eq('client_id', currentUser.id).order('created_at', { ascending: false });
+    currentCommandes = data || [];
+    renderCommandes();
+    renderChatProjects();
+  }
+
+  function updateKPIs() {
+    const actifs = currentCommandes.filter(c => c.statut === 'en_cours').length;
+    const livres = currentCommandes.filter(c => c.statut === 'livre').length;
+    document.getElementById('kpi-actifs').textContent = actifs;
+    document.getElementById('kpi-livres').textContent = livres;
+    document.getElementById('kpi-messages').textContent = '0';
+  }
+
+  function statutLabel(s) {
+    const map = { en_attente: 'En attente', en_cours: 'En cours', livre: 'Livré ✓', annule: 'Annulé' };
+    return map[s] || s;
+  }
+
+  function commandeCardHTML(c) {
+    return `
+      <div class="commande-card" onclick="openChat('${c.id}')">
+        <div class="commande-info">
+          <h3>${c.titre}</h3>
+          <p>${c.type_projet} ${c.prix ? '· ' + c.prix + '€' : ''} · ${new Date(c.created_at).toLocaleDateString('fr-FR')}</p>
+        </div>
+        <div class="commande-right">
+          <span class="statut-badge statut-${c.statut}">${statutLabel(c.statut)}</span>
+          <span class="commande-arrow">→</span>
+        </div>
+      </div>`;
+  }
+
+  function renderCommandes() {
+    const html = currentCommandes.length
+      ? currentCommandes.map(commandeCardHTML).join('')
+      : `<div class="empty-state"><div class="emoji">📦</div><p>Aucune commande pour l'instant.<br>Contactez-nous via le formulaire de devis !</p></div>`;
+    document.getElementById('commandes-list').innerHTML = html;
+    document.getElementById('accueil-commandes').innerHTML = currentCommandes.length
+      ? currentCommandes.slice(0, 3).map(commandeCardHTML).join('')
+      : `<div class="empty-state"><div class="emoji">📦</div><p>Aucune commande pour l'instant.</p></div>`;
+  }
+
+  function renderChatProjects() {
+    const list = document.getElementById('chat-projects-list');
+    if (!currentCommandes.length) {
+      list.innerHTML = `<div style="padding:12px;color:var(--muted);font-size:0.85rem;">Aucun projet</div>`;
+      return;
+    }
+    list.innerHTML = currentCommandes.map(c => `
+      <div class="chat-project-item" id="proj-${c.id}" onclick="selectChatProject('${c.id}', '${c.titre.replace(/'/g, "\\'")}')">
+        <div class="chat-project-name">${c.titre}</div>
+        <div class="chat-project-last">${statutLabel(c.statut)}</div>
+      </div>`).join('');
+  }
+
+  async function selectChatProject(commandeId, titre) {
+    activeCommandeId = commandeId;
+    document.querySelectorAll('.chat-project-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('proj-' + commandeId)?.classList.add('active');
+    document.getElementById('chat-window').innerHTML = `
+      <div class="chat-header">
+        <div class="chat-header-icon">💬</div>
+        <div>
+          <div class="chat-header-name">${titre}</div>
+          <div class="chat-header-status">● En ligne</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-msgs"></div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" placeholder="Votre message..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send" onclick="sendMessage()">Envoyer →</button>
+      </div>`;
+    await loadMessages(commandeId);
+    subscribeMessages(commandeId);
+  }
+
+  async function loadMessages(commandeId) {
+    const { data } = await supabase.from('messages').select('*, profiles(full_name)').eq('commande_id', commandeId).order('created_at', { ascending: true });
+    const container = document.getElementById('chat-msgs');
+    if (!container) return;
+    if (!data || !data.length) {
+      container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:20px;">Démarrez la conversation avec l'équipe KaraWeb 👋</div>`;
+      return;
+    }
+    container.innerHTML = data.map(m => {
+      const isMine = m.sender_id === currentUser.id;
+      const time = new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return `<div class="msg ${isMine ? 'sent' : 'received'}">
+        ${m.contenu}
+        <div class="msg-time">${isMine ? 'Vous' : 'KaraWeb'} · ${time}</div>
+      </div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function subscribeMessages(commandeId) {
+    if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+    realtimeChannel = supabase.channel('msgs-' + commandeId)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `commande_id=eq.${commandeId}` },
+        () => loadMessages(commandeId))
+      .subscribe();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const contenu = input?.value.trim();
+    if (!contenu || !activeCommandeId) return;
+    input.value = '';
+    await supabase.from('messages').insert({ commande_id: activeCommandeId, sender_id: currentUser.id, contenu });
+  }
+
+  function handleChatKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function openChat(commandeId) {
+    showPage('messages');
+    const c = currentCommandes.find(x => x.id === commandeId);
+    if (c) selectChatProject(c.id, c.titre);
+  }
+
+  async function saveProfil() {
+    const { error } = await supabase.from('profiles').update({
+      full_name: document.getElementById('profil-name').value,
+      company: document.getElementById('profil-company').value,
+      phone: document.getElementById('profil-phone').value,
+    }).eq('id', currentUser.id);
+    if (!error) { alert('✓ Profil sauvegardé !'); loadProfile(); }
+  }
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const idx = ['accueil','commandes','messages','profil'].indexOf(name);
+    document.querySelectorAll('.sidebar-item')[idx]?.classList.add('active');
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    window.location.href = 'auth.html';
+  }
+</script>
+</body>
+</html>
