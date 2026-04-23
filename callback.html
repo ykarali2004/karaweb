@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>KaraWeb – Chargement</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+body{margin:0;background:#06080f;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;font-family:sans-serif}
+.logo{font-family:sans-serif;font-weight:800;font-size:1.8rem;background:linear-gradient(135deg,#00f0ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sp{width:28px;height:28px;border:2px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="logo">KaraWeb</div>
+<div class="sp"></div>
+<script>
+var db = supabase.createClient(
+  'https://midkwlribyrryremnnyd.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
+);
+
+// Cette page capte le token Google dans l'URL et crée la session
+db.auth.onAuthStateChange(function(event, session) {
+  if (session) {
+    window.location.replace('https://ykarali2004.github.io/karaweb/dashboard.html');
+  }
+});
+
+// Vérification après 3 secondes si onAuthStateChange ne se déclenche pas
+setTimeout(function() {
+  db.auth.getSession().then(function(r) {
+    if (r.data && r.data.session) {
+      window.location.replace('https://ykarali2004.github.io/karaweb/dashboard.html');
+    } else {
+      window.location.replace('https://ykarali2004.github.io/karaweb/auth.html');
+    }
+  });
+}, 3000);
+</script>
+</body>
+</html>
