@@ -237,10 +237,38 @@ var ACTIVE_CHAT = null;
 var RTC = null;
 
 // Démarre l'app après vérification session
-db.auth.getSession().then(function(r) {
-  if (r.data && r.data.session) {
-    ME = r.data.session.user;
-    start();
+<script>
+var AUTH = 'https://ykarali2004.github.io/karaweb/auth.html';
+
+var db = supabase.createClient(
+  'https://midkwlribyrryremnnyd.supabase.co',
+  'TA_VRAIE_CLE_ANON'
+);
+
+async function start() {
+  const { data } = await db.auth.getSession();
+
+  if (!data.session) {
+    window.location.href = AUTH;
+    return;
+  }
+
+  const user = data.session.user;
+
+  document.getElementById('ls').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  const name =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email.split('@')[0];
+
+  document.getElementById('unn').textContent = name;
+  document.getElementById('greeting').textContent = name.split(' ')[0];
+}
+
+start();
+</script>
   } else {
     // Pas de session → retour auth
     window.location.replace(AUTH);
