@@ -50,6 +50,7 @@
     .btn{width:100%;border:0;padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:10px}
     .btn-primary{background:linear-gradient(90deg,var(--cyan),var(--violet));color:#061018}
     .btn-secondary{background:#fff;color:#000}
+
     .main{padding:28px}
     .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
     .title{margin:0;font-size:34px;letter-spacing:-1px}
@@ -71,144 +72,27 @@
     .badge.done{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.18)}
     .badge.cancelled{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.18)}
 
-    .chat-admin{
-      display:grid;
-      grid-template-columns:320px 1fr;
-      gap:18px;
-      min-height:620px;
-    }
+    .chat-admin{display:grid;grid-template-columns:320px 1fr;gap:18px;min-height:620px}
+    .conversation-list,.conversation-panel{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+    .conversation-head{padding:18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+    .conversation-head h3{margin:0;font-size:18px}
+    .conversation-head p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .conv-items{display:grid;max-height:560px;overflow:auto}
+    .conv-item{padding:16px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s ease}
+    .conv-item:hover{background:rgba(255,255,255,.03)}
+    .conv-item.active{background:linear-gradient(90deg, rgba(0,231,255,.12), rgba(139,92,246,.12))}
+    .conv-name{font-weight:700;margin-bottom:6px}
+    .conv-preview{color:var(--muted);font-size:13px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    .conversation-list,
-    .conversation-panel{
-      background:rgba(17,24,39,.88);
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-    }
-
-    .conversation-head{
-      padding:18px;
-      border-bottom:1px solid var(--border);
-      background:rgba(255,255,255,.02);
-    }
-
-    .conversation-head h3{
-      margin:0;
-      font-size:18px;
-    }
-
-    .conversation-head p{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .conv-items{
-      display:grid;
-      max-height:560px;
-      overflow:auto;
-    }
-
-    .conv-item{
-      padding:16px 18px;
-      border-bottom:1px solid var(--border);
-      cursor:pointer;
-      transition:.2s ease;
-    }
-
-    .conv-item:hover{
-      background:rgba(255,255,255,.03);
-    }
-
-    .conv-item.active{
-      background:linear-gradient(90deg, rgba(0,231,255,.12), rgba(139,92,246,.12));
-    }
-
-    .conv-name{
-      font-weight:700;
-      margin-bottom:6px;
-    }
-
-    .conv-preview{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .messages-box{
-      padding:18px;
-      height:460px;
-      overflow:auto;
-      display:grid;
-      gap:12px;
-      align-content:start;
-    }
-
-    .msg{
-      padding:12px 14px;
-      border-radius:14px;
-      max-width:78%;
-      line-height:1.5;
-      font-size:14px;
-      white-space:pre-wrap;
-    }
-
-    .msg.client{
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--border);
-    }
-
-    .msg.admin{
-      background:rgba(0,231,255,.12);
-      border:1px solid rgba(0,231,255,.18);
-      margin-left:auto;
-    }
-
-    .msg-meta{
-      display:block;
-      margin-top:6px;
-      color:var(--muted);
-      font-size:11px;
-    }
-
-    .reply-form{
-      border-top:1px solid var(--border);
-      padding:16px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .reply-input{
-      flex:1;
-      min-width:240px;
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:13px 14px;
-      color:var(--text);
-      outline:none;
-    }
-
-    .reply-btn{
-      border:0;
-      background:linear-gradient(90deg,var(--cyan),var(--violet));
-      color:#061018;
-      padding:13px 16px;
-      border-radius:12px;
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    .empty{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.6;
-      padding:18px;
-    }
+    .messages-box{padding:18px;height:460px;overflow:auto;display:grid;gap:12px;align-content:start}
+    .msg{padding:12px 14px;border-radius:14px;max-width:78%;line-height:1.5;font-size:14px;white-space:pre-wrap}
+    .msg.client{background:rgba(255,255,255,.04);border:1px solid var(--border)}
+    .msg.admin{background:rgba(0,231,255,.12);border:1px solid rgba(0,231,255,.18);margin-left:auto}
+    .msg-meta{display:block;margin-top:6px;color:var(--muted);font-size:11px}
+    .reply-form{border-top:1px solid var(--border);padding:16px;display:flex;gap:10px;flex-wrap:wrap}
+    .reply-input{flex:1;min-width:240px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);outline:none}
+    .reply-btn{border:0;background:linear-gradient(90deg,var(--cyan),var(--violet));color:#061018;padding:13px 16px;border-radius:12px;font-weight:700;cursor:pointer}
+    .empty{color:var(--muted);font-size:14px;line-height:1.6;padding:18px}
 
     @media (max-width: 980px){
       .layout{grid-template-columns:1fr}
@@ -225,501 +109,502 @@
 </head>
 <body>
 
-  <div id="loader" class="loader-wrap">
-    <div class="loader-box">
-      <h1 class="brand">KaraWeb</h1>
-      <div>Chargement de l’espace administrateur...</div>
-    </div>
+<div id="loader" class="loader-wrap">
+  <div class="loader-box">
+    <h1 class="brand">KaraWeb</h1>
+    <div>Chargement de l’espace administrateur...</div>
   </div>
+</div>
 
-  <div id="app">
-    <div class="layout">
-      <aside class="sidebar">
-        <h1 class="logo">KaraWeb</h1>
-        <div class="tag">Administration</div>
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <h1 class="logo">KaraWeb</h1>
+      <div class="tag">Administration</div>
 
-        <div class="nav">
-          <button class="nav-btn active" data-page="overview" type="button">Vue d’ensemble</button>
-          <button class="nav-btn" data-page="orders" type="button">Commandes</button>
-          <button class="nav-btn" data-page="clients" type="button">Clients</button>
-          <button class="nav-btn" data-page="messages" type="button">Conversations</button>
+      <div class="nav">
+        <button class="nav-btn active" data-page="overview" type="button">Vue d’ensemble</button>
+        <button class="nav-btn" data-page="orders" type="button">Commandes</button>
+        <button class="nav-btn" data-page="clients" type="button">Clients</button>
+        <button class="nav-btn" data-page="messages" type="button">Conversations</button>
+      </div>
+
+      <div class="admin-card">
+        <p class="admin-name" id="adminName">Admin</p>
+        <p class="admin-mail" id="adminEmail">...</p>
+        <button class="btn btn-primary" onclick="goSite()">← Retour au site</button>
+        <button class="btn btn-primary" onclick="goClient()">Espace client</button>
+        <button class="btn btn-secondary" onclick="logout()">Se déconnecter</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 class="title">Administration KaraWeb</h2>
+          <p class="subtitle" id="adminSubtitle">Chargement de votre compte administrateur...</p>
         </div>
+      </div>
 
-        <div class="admin-card">
-          <p class="admin-name" id="adminName">Admin</p>
-          <p class="admin-mail" id="adminEmail">...</p>
-          <button class="btn btn-primary" onclick="goSite()">← Retour au site</button>
-          <button class="btn btn-primary" onclick="goClient()">Espace client</button>
-          <button class="btn btn-secondary" onclick="logout()">Se déconnecter</button>
-        </div>
-      </aside>
-
-      <main class="main">
-        <div class="topbar">
-          <div>
-            <h2 class="title">Administration KaraWeb</h2>
-            <p class="subtitle" id="adminSubtitle">Chargement de votre compte administrateur...</p>
+      <section id="page-overview" class="page active">
+        <div class="grid">
+          <div class="card">
+            <div class="small-label">Clients</div>
+            <p class="big-number" id="clientsCount">0</p>
+          </div>
+          <div class="card">
+            <div class="small-label">Commandes</div>
+            <p class="big-number" id="ordersCount">0</p>
+          </div>
+          <div class="card">
+            <div class="small-label">Admins</div>
+            <p class="big-number" id="adminsCount">0</p>
+          </div>
+          <div class="card">
+            <div class="small-label">Conversations</div>
+            <p class="big-number" id="conversationsCount">0</p>
           </div>
         </div>
+      </section>
 
-        <section id="page-overview" class="page active">
-          <div class="grid">
-            <div class="card">
-              <div class="small-label">Clients</div>
-              <p class="big-number" id="clientsCount">0</p>
+      <section id="page-orders" class="page">
+        <h3 class="section-title">Toutes les commandes</h3>
+        <div id="ordersList" class="list"></div>
+      </section>
+
+      <section id="page-clients" class="page">
+        <h3 class="section-title">Tous les clients</h3>
+        <div id="profilesList" class="list"></div>
+      </section>
+
+      <section id="page-messages" class="page">
+        <h3 class="section-title">Conversations clients</h3>
+
+        <div class="chat-admin">
+          <div class="conversation-list">
+            <div class="conversation-head">
+              <h3>Clients</h3>
+              <p>Sélectionnez une conversation</p>
             </div>
-            <div class="card">
-              <div class="small-label">Commandes</div>
-              <p class="big-number" id="ordersCount">0</p>
-            </div>
-            <div class="card">
-              <div class="small-label">Admins</div>
-              <p class="big-number" id="adminsCount">0</p>
-            </div>
-            <div class="card">
-              <div class="small-label">Conversations</div>
-              <p class="big-number" id="conversationsCount">0</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="page-orders" class="page">
-          <h3 class="section-title">Toutes les commandes</h3>
-          <div id="ordersList" class="list"></div>
-        </section>
-
-        <section id="page-clients" class="page">
-          <h3 class="section-title">Tous les clients</h3>
-          <div id="profilesList" class="list"></div>
-        </section>
-
-        <section id="page-messages" class="page">
-          <h3 class="section-title">Conversations clients</h3>
-
-          <div class="chat-admin">
-            <div class="conversation-list">
-              <div class="conversation-head">
-                <h3>Clients</h3>
-                <p>Sélectionnez une conversation</p>
-              </div>
-              <div class="conv-items" id="conversationList">
-                <div class="empty">Chargement des conversations...</div>
-              </div>
-            </div>
-
-            <div class="conversation-panel">
-              <div class="conversation-head">
-                <h3 id="selectedClientName">Aucune conversation sélectionnée</h3>
-                <p id="selectedClientInfo">Choisissez un client à gauche.</p>
-              </div>
-
-              <div class="messages-box" id="adminMessagesBox">
-                <div class="empty">Aucune conversation ouverte.</div>
-              </div>
-
-              <form class="reply-form" id="replyForm">
-                <input
-                  type="text"
-                  id="replyInput"
-                  class="reply-input"
-                  placeholder="Répondre au client..."
-                  disabled
-                />
-                <button type="submit" class="reply-btn" id="replyBtn" disabled>Envoyer</button>
-              </form>
+            <div class="conv-items" id="conversationList">
+              <div class="empty">Chargement des conversations...</div>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+
+          <div class="conversation-panel">
+            <div class="conversation-head">
+              <h3 id="selectedClientName">Aucune conversation sélectionnée</h3>
+              <p id="selectedClientInfo">Choisissez un client à gauche.</p>
+            </div>
+
+            <div class="messages-box" id="adminMessagesBox">
+              <div class="empty">Aucune conversation ouverte.</div>
+            </div>
+
+            <form class="reply-form" id="replyForm">
+              <input type="text" id="replyInput" class="reply-input" placeholder="Répondre au client..." disabled />
+              <button type="submit" class="reply-btn" id="replyBtn" disabled>Envoyer</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
+</div>
 
-  <script>
-    const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
-    const DASHBOARD_URL = 'https://ykarali2004.github.io/karaweb/dashboard.html';
-    const SITE_URL = 'https://ykarali2004.github.io/karaweb/index.html';
+<script>
+const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
+const DASHBOARD_URL = 'https://ykarali2004.github.io/karaweb/dashboard.html';
+const SITE_URL = 'https://ykarali2004.github.io/karaweb/index.html';
 
-    const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
+const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
-    const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    let currentAdmin = null;
-    let profilesCache = [];
-    let messagesCache = [];
-    let selectedClientId = null;
+let currentAdmin = null;
+let profilesCache = [];
+let messagesCache = [];
+let selectedClientId = null;
 
-    function escapeHtml(text) {
-      return String(text || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+function escapeHtml(text) {
+  return String(text || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  return new Date(value).toLocaleString('fr-FR', {
+    day:'2-digit',
+    month:'2-digit',
+    hour:'2-digit',
+    minute:'2-digit'
+  });
+}
+
+function getProfileById(id) {
+  return profilesCache.find(p => String(p.id) === String(id));
+}
+
+function getClientName(clientId) {
+  const profile = getProfileById(clientId);
+
+  if (profile) {
+    if (profile.full_name && profile.full_name.trim() !== '') return profile.full_name;
+    if (profile.email && profile.email.trim() !== '') return profile.email;
+  }
+
+  return 'Client sans nom';
+}
+
+function getClientEmail(clientId) {
+  const profile = getProfileById(clientId);
+  return profile?.email || '';
+}
+
+function goClient() {
+  window.location.href = DASHBOARD_URL;
+}
+
+function goSite() {
+  window.location.href = SITE_URL;
+}
+
+async function logout() {
+  await client.auth.signOut();
+  window.location.href = AUTH_URL;
+}
+
+function getStatusClass(status) {
+  if (!status) return 'pending';
+  const s = status.toLowerCase();
+
+  if (s.includes('cours')) return 'progress';
+  if (s.includes('livr')) return 'done';
+  if (s.includes('annul')) return 'cancelled';
+  if (s.includes('attente')) return 'pending';
+
+  return 'pending';
+}
+
+function setActivePage(pageName) {
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+  const targetPage = document.getElementById('page-' + pageName);
+  const targetBtn = document.querySelector('.nav-btn[data-page="' + pageName + '"]');
+
+  if (targetPage) targetPage.classList.add('active');
+  if (targetBtn) targetBtn.classList.add('active');
+}
+
+function bindNavigation() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      setActivePage(btn.getAttribute('data-page'));
+    });
+  });
+}
+
+async function loadProfiles() {
+  const profilesList = document.getElementById('profilesList');
+
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, full_name, email, role')
+    .order('full_name', { ascending: true });
+
+  if (error) {
+    profilesList.innerHTML = `
+      <div class="item">
+        <h4 class="item-title">Erreur</h4>
+        <p class="item-text">${escapeHtml(error.message)}</p>
+      </div>
+    `;
+    return [];
+  }
+
+  const profiles = data || [];
+  profilesCache = profiles;
+
+  document.getElementById('clientsCount').textContent = String(
+    profiles.filter(p => (p.role || 'client') === 'client').length
+  );
+
+  document.getElementById('adminsCount').textContent = String(
+    profiles.filter(p => (p.role || 'client') === 'admin').length
+  );
+
+  if (profiles.length === 0) {
+    profilesList.innerHTML = `
+      <div class="item">
+        <h4 class="item-title">Aucun profil</h4>
+        <p class="item-text">Aucun utilisateur trouvé.</p>
+      </div>
+    `;
+    return [];
+  }
+
+  profilesList.innerHTML = profiles.map(profile => {
+    const name = profile.full_name || profile.email || 'Client sans nom';
+
+    return `
+      <div class="item">
+        <h4 class="item-title">${escapeHtml(name)}</h4>
+        <p class="item-text">
+          Email : ${escapeHtml(profile.email || '—')}<br>
+          ID : ${escapeHtml(profile.id)}<br>
+          Rôle : ${escapeHtml(profile.role || 'client')}
+        </p>
+      </div>
+    `;
+  }).join('');
+
+  return profiles;
+}
+
+async function loadOrders() {
+  const ordersList = document.getElementById('ordersList');
+
+  const { data, error } = await client
+    .from('commandes')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    ordersList.innerHTML = `
+      <div class="item">
+        <h4 class="item-title">Erreur</h4>
+        <p class="item-text">${escapeHtml(error.message)}</p>
+      </div>
+    `;
+    return [];
+  }
+
+  const orders = data || [];
+  document.getElementById('ordersCount').textContent = String(orders.length);
+
+  if (orders.length === 0) {
+    ordersList.innerHTML = `
+      <div class="item">
+        <h4 class="item-title">Aucune commande</h4>
+        <p class="item-text">Aucune commande enregistrée.</p>
+      </div>
+    `;
+    return [];
+  }
+
+  ordersList.innerHTML = orders.map(order => {
+    const badgeClass = getStatusClass(order.statut);
+    const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
+
+    return `
+      <div class="item">
+        <h4 class="item-title">${escapeHtml(order.titre || 'Commande sans titre')}</h4>
+        <p class="item-text">
+          Client : ${escapeHtml(getClientName(order.client_id))}<br>
+          Client ID : ${escapeHtml(order.client_id || '—')}<br>
+          Type : ${escapeHtml(order.type_projet || '—')}<br>
+          Plan : ${escapeHtml(order.plan || '—')}<br>
+          Description : ${escapeHtml(order.description || '—')}<br>
+          Prix : ${escapeHtml(prix)}
+        </p>
+        <span class="badge ${badgeClass}">${escapeHtml(order.statut || 'Statut inconnu')}</span>
+      </div>
+    `;
+  }).join('');
+
+  return orders;
+}
+
+async function loadAllMessages() {
+  const { data, error } = await client
+    .from('messages')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    document.getElementById('conversationList').innerHTML =
+      `<div class="empty">Erreur chargement messages : ${escapeHtml(error.message)}</div>`;
+    return [];
+  }
+
+  messagesCache = data || [];
+  renderConversationList();
+  return messagesCache;
+}
+
+function renderConversationList() {
+  const list = document.getElementById('conversationList');
+  const clientIds = [...new Set(messagesCache.map(m => m.client_id))];
+
+  document.getElementById('conversationsCount').textContent = String(clientIds.length);
+
+  if (clientIds.length === 0) {
+    list.innerHTML = `<div class="empty">Aucune conversation pour le moment.</div>`;
+    return;
+  }
+
+  list.innerHTML = clientIds.map(clientId => {
+    const messages = messagesCache.filter(m => String(m.client_id) === String(clientId));
+    const last = messages[messages.length - 1];
+    const name = getClientName(clientId);
+
+    return `
+      <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
+        <div class="conv-name">${escapeHtml(name)}</div>
+        <div class="conv-preview">${escapeHtml(last?.content || 'Aucun message')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openConversation(clientId) {
+  selectedClientId = clientId;
+
+  const messages = messagesCache.filter(m => String(m.client_id) === String(clientId));
+  const name = getClientName(clientId);
+  const email = getClientEmail(clientId);
+
+  document.getElementById('selectedClientName').textContent = name;
+
+  document.getElementById('selectedClientInfo').textContent =
+    email ? email + ' · ID : ' + clientId : 'Client ID : ' + clientId;
+
+  document.getElementById('replyInput').disabled = false;
+  document.getElementById('replyBtn').disabled = false;
+
+  renderConversationList();
+  renderMessages(messages);
+}
+
+function renderMessages(messages) {
+  const box = document.getElementById('adminMessagesBox');
+
+  if (!messages || messages.length === 0) {
+    box.innerHTML = `<div class="empty">Aucun message.</div>`;
+    return;
+  }
+
+  box.innerHTML = messages.map(msg => {
+    const isAdmin = String(msg.sender_id) === String(currentAdmin.id);
+
+    return `
+      <div class="msg ${isAdmin ? 'admin' : 'client'}">
+        ${escapeHtml(msg.content)}
+        <span class="msg-meta">${isAdmin ? 'Vous' : getClientName(msg.client_id)} · ${formatDate(msg.created_at)}</span>
+      </div>
+    `;
+  }).join('');
+
+  box.scrollTop = box.scrollHeight;
+}
+
+function bindReplyForm() {
+  const form = document.getElementById('replyForm');
+  const input = document.getElementById('replyInput');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!selectedClientId) return;
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+
+    const { error } = await client.from('messages').insert({
+      client_id: selectedClientId,
+      sender_id: currentAdmin.id,
+      content: text
+    });
+
+    if (error) {
+      alert('Erreur lors de l’envoi du message.');
+      return;
     }
 
-    function formatDate(value) {
-      if (!value) return '';
-      return new Date(value).toLocaleString('fr-FR', {
-        day:'2-digit',
-        month:'2-digit',
-        hour:'2-digit',
-        minute:'2-digit'
+    await loadAllMessages();
+    openConversation(selectedClientId);
+  });
+}
+
+async function boot() {
+  try {
+    const hash = window.location.hash.startsWith('#')
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+
+    const params = new URLSearchParams(hash);
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+
+    if (access_token && refresh_token) {
+      const { error: setError } = await client.auth.setSession({
+        access_token,
+        refresh_token
       });
-    }
 
-    function goClient() {
-      window.location.href = DASHBOARD_URL;
-    }
-
-    function goSite() {
-      window.location.href = SITE_URL;
-    }
-
-    async function logout() {
-      await client.auth.signOut();
-      window.location.href = AUTH_URL;
-    }
-
-    function getStatusClass(status) {
-      if (!status) return 'pending';
-
-      const s = status.toLowerCase();
-
-      if (s.includes('cours')) return 'progress';
-      if (s.includes('livr')) return 'done';
-      if (s.includes('annul')) return 'cancelled';
-      if (s.includes('attente')) return 'pending';
-
-      return 'pending';
-    }
-
-    function setActivePage(pageName) {
-      document.querySelectorAll('.page').forEach(function(page) {
-        page.classList.remove('active');
-      });
-
-      document.querySelectorAll('.nav-btn').forEach(function(btn) {
-        btn.classList.remove('active');
-      });
-
-      const targetPage = document.getElementById('page-' + pageName);
-      const targetBtn = document.querySelector('.nav-btn[data-page="' + pageName + '"]');
-
-      if (targetPage) targetPage.classList.add('active');
-      if (targetBtn) targetBtn.classList.add('active');
-    }
-
-    function bindNavigation() {
-      document.querySelectorAll('.nav-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          const pageName = btn.getAttribute('data-page');
-          setActivePage(pageName);
-        });
-      });
-    }
-
-    async function loadProfiles() {
-      const profilesList = document.getElementById('profilesList');
-
-      const { data, error } = await client
-        .from('profiles')
-        .select('id, full_name, email, role')
-        .order('full_name', { ascending: true });
-
-      if (error) {
-        profilesList.innerHTML = `
-          <div class="item">
-            <h4 class="item-title">Erreur</h4>
-            <p class="item-text">${escapeHtml(error.message)}</p>
-          </div>
-        `;
-        return [];
-      }
-
-      const profiles = data || [];
-      profilesCache = profiles;
-
-      document.getElementById('clientsCount').textContent = String(
-        profiles.filter(p => (p.role || 'client') === 'client').length
-      );
-
-      document.getElementById('adminsCount').textContent = String(
-        profiles.filter(p => (p.role || 'client') === 'admin').length
-      );
-
-      if (profiles.length === 0) {
-        profilesList.innerHTML = `
-          <div class="item">
-            <h4 class="item-title">Aucun profil</h4>
-            <p class="item-text">Aucun utilisateur trouvé.</p>
-          </div>
-        `;
-        return [];
-      }
-
-      profilesList.innerHTML = data.map(function(profile) {
-  const name = profile.full_name || profile.email || 'Client sans nom';
-
-  return `
-    <div class="item">
-      <h4 class="item-title">${name}</h4>
-            <p class="item-text">
-              ID : ${escapeHtml(profile.id)}<br>
-              Rôle : ${escapeHtml(profile.role || 'client')}
-            </p>
-          </div>
-        `;
-      }).join('');
-
-      return profiles;
-    }
-
-    async function loadOrders() {
-      const ordersList = document.getElementById('ordersList');
-
-      const { data, error } = await client
-        .from('commandes')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        ordersList.innerHTML = `
-          <div class="item">
-            <h4 class="item-title">Erreur</h4>
-            <p class="item-text">${escapeHtml(error.message)}</p>
-          </div>
-        `;
-        return [];
-      }
-
-      const orders = data || [];
-
-      document.getElementById('ordersCount').textContent = String(orders.length);
-
-      if (orders.length === 0) {
-        ordersList.innerHTML = `
-          <div class="item">
-            <h4 class="item-title">Aucune commande</h4>
-            <p class="item-text">Aucune commande enregistrée.</p>
-          </div>
-        `;
-        return [];
-      }
-
-      ordersList.innerHTML = orders.map(function(order) {
-        const badgeClass = getStatusClass(order.statut);
-        const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
-
-        return `
-          <div class="item">
-            <h4 class="item-title">${escapeHtml(order.titre || 'Commande sans titre')}</h4>
-            <p class="item-text">
-              Client ID : ${escapeHtml(order.client_id || '—')}<br>
-              Type : ${escapeHtml(order.type_projet || '—')}<br>
-              Plan : ${escapeHtml(order.plan || '—')}<br>
-              Description : ${escapeHtml(order.description || '—')}<br>
-              Prix : ${escapeHtml(prix)}
-            </p>
-            <span class="badge ${badgeClass}">${escapeHtml(order.statut || 'Statut inconnu')}</span>
-          </div>
-        `;
-      }).join('');
-
-      return orders;
-    }
-
-    function getProfileById(id) {
-      return profilesCache.find(p => p.id === id);
-    }
-
-    async function loadAllMessages() {
-      const { data, error } = await client
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        document.getElementById('conversationList').innerHTML =
-          `<div class="empty">Erreur chargement messages : ${escapeHtml(error.message)}</div>`;
-        return [];
-      }
-
-      messagesCache = data || [];
-      renderConversationList();
-      return messagesCache;
-    }
-
-    function renderConversationList() {
-      const list = document.getElementById('conversationList');
-      const clientIds = [...new Set(messagesCache.map(m => m.client_id))];
-
-      document.getElementById('conversationsCount').textContent = String(clientIds.length);
-
-      if (clientIds.length === 0) {
-        list.innerHTML = `<div class="empty">Aucune conversation pour le moment.</div>`;
-        return;
-      }
-
-      list.innerHTML = clientIds.map(clientId => {
-        const profile = getProfileById(clientId);
-        const messages = messagesCache.filter(m => m.client_id === clientId);
-        const last = messages[messages.length - 1];
-
-        const name =
-  profile?.full_name ||
-  profile?.email ||
-  'Client sans nom';
-        return `
-          <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
-            <div class="conv-name">${escapeHtml(name)}</div>
-            <div class="conv-preview">${escapeHtml(last?.content || 'Aucun message')}</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function openConversation(clientId) {
-      selectedClientId = clientId;
-
-      const profile = getProfileById(clientId);
-      const messages = messagesCache.filter(m => m.client_id === clientId);
-
-      document.getElementById('selectedClientName').textContent =
-  profile?.full_name || profile?.email || 'Client sans nom';
-
-      document.getElementById('selectedClientInfo').textContent =
-        'Client ID : ' + clientId;
-
-      document.getElementById('replyInput').disabled = false;
-      document.getElementById('replyBtn').disabled = false;
-
-      renderConversationList();
-      renderMessages(messages);
-    }
-
-    function renderMessages(messages) {
-      const box = document.getElementById('adminMessagesBox');
-
-      if (!messages || messages.length === 0) {
-        box.innerHTML = `<div class="empty">Aucun message.</div>`;
-        return;
-      }
-
-      box.innerHTML = messages.map(msg => {
-        const isAdmin = msg.sender_id === currentAdmin.id;
-
-        return `
-          <div class="msg ${isAdmin ? 'admin' : 'client'}">
-            ${escapeHtml(msg.content)}
-            <span class="msg-meta">${isAdmin ? 'Vous' : 'Client'} · ${formatDate(msg.created_at)}</span>
-          </div>
-        `;
-      }).join('');
-
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function bindReplyForm() {
-      const form = document.getElementById('replyForm');
-      const input = document.getElementById('replyInput');
-
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        if (!selectedClientId) return;
-
-        const text = input.value.trim();
-        if (!text) return;
-
-        input.value = '';
-
-        const { error } = await client.from('messages').insert({
-          client_id: selectedClientId,
-          sender_id: currentAdmin.id,
-          content: text
-        });
-
-        if (error) {
-          alert('Erreur lors de l’envoi du message.');
-          return;
-        }
-
-        await loadAllMessages();
-        openConversation(selectedClientId);
-      });
-    }
-
-    async function boot() {
-      try {
-        const hash = window.location.hash.startsWith('#')
-          ? window.location.hash.slice(1)
-          : window.location.hash;
-
-        const params = new URLSearchParams(hash);
-        const access_token = params.get('access_token');
-        const refresh_token = params.get('refresh_token');
-
-        if (access_token && refresh_token) {
-          const { error: setError } = await client.auth.setSession({
-            access_token,
-            refresh_token
-          });
-
-          if (setError) {
-            window.location.href = AUTH_URL;
-            return;
-          }
-
-          history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        const { data: userData, error: userError } = await client.auth.getUser();
-
-        if (userError || !userData || !userData.user) {
-          window.location.href = AUTH_URL;
-          return;
-        }
-
-        const user = userData.user;
-        currentAdmin = user;
-
-        const { data: profile, error: profileError } = await client
-          .from('profiles')
-          .select('id, full_name, email, role')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (profileError || !profile || profile.role !== 'admin') {
-          window.location.href = DASHBOARD_URL;
-          return;
-        }
-
-        document.getElementById('adminName').textContent =
-          profile.full_name || user.email || 'Admin';
-
-        document.getElementById('adminEmail').textContent =
-          user.email || '';
-
-        document.getElementById('adminSubtitle').textContent =
-          'Connecté en tant qu’administrateur : ' + (profile.full_name || user.email || 'Admin');
-
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-
-        bindNavigation();
-        bindReplyForm();
-
-        await loadOrders();
-        await loadProfiles();
-        await loadAllMessages();
-      } catch (e) {
-        console.error(e);
+      if (setError) {
         window.location.href = AUTH_URL;
+        return;
       }
+
+      history.replaceState({}, document.title, window.location.pathname);
     }
 
-    boot();
-  </script>
+    const { data: userData, error: userError } = await client.auth.getUser();
+
+    if (userError || !userData || !userData.user) {
+      window.location.href = AUTH_URL;
+      return;
+    }
+
+    const user = userData.user;
+    currentAdmin = user;
+
+    const { data: profile, error: profileError } = await client
+      .from('profiles')
+      .select('id, full_name, email, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError || !profile || profile.role !== 'admin') {
+      window.location.href = DASHBOARD_URL;
+      return;
+    }
+
+    document.getElementById('adminName').textContent =
+      profile.full_name || profile.email || user.email || 'Admin';
+
+    document.getElementById('adminEmail').textContent =
+      profile.email || user.email || '';
+
+    document.getElementById('adminSubtitle').textContent =
+      'Connecté en tant qu’administrateur : ' + (profile.full_name || profile.email || user.email || 'Admin');
+
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    bindNavigation();
+    bindReplyForm();
+
+    await loadProfiles();
+    await loadOrders();
+    await loadAllMessages();
+
+  } catch (e) {
+    console.error(e);
+    window.location.href = AUTH_URL;
+  }
+}
+
+boot();
+</script>
 </body>
 </html>
