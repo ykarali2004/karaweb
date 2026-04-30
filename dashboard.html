@@ -453,7 +453,11 @@ async function loadOrders(user) {
   }).join('');
 }
 
-async function loadMessages(user) {
+async function loadMessages(user) {await client
+  .from('messages')
+  .update({ is_read: true })
+  .eq('client_id', user.id)
+  .neq('sender_id', user.id);
   const box = document.getElementById('chatMessages');
   const count = document.getElementById('msgCount');
 
