@@ -424,7 +424,7 @@
 
       const { data, error } = await client
         .from('profiles')
-        .select('id, full_name, role')
+        .select('id, full_name, email, role')
         .order('full_name', { ascending: true });
 
       if (error) {
@@ -564,8 +564,7 @@
         const messages = messagesCache.filter(m => m.client_id === clientId);
         const last = messages[messages.length - 1];
 
-        const name = profile?.full_name || 'Client sans nom';
-
+        const name = profile?.full_name || profile?.email || 'Client sans nom';
         return `
           <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
             <div class="conv-name">${escapeHtml(name)}</div>
@@ -582,7 +581,7 @@
       const messages = messagesCache.filter(m => m.client_id === clientId);
 
       document.getElementById('selectedClientName').textContent =
-        profile?.full_name || 'Client sans nom';
+  profile?.full_name || profile?.email || 'Client sans nom';
 
       document.getElementById('selectedClientInfo').textContent =
         'Client ID : ' + clientId;
@@ -682,7 +681,7 @@
 
         const { data: profile, error: profileError } = await client
           .from('profiles')
-          .select('id, full_name, role')
+          .select('id, full_name, email, role')
           .eq('id', user.id)
           .maybeSingle();
 
