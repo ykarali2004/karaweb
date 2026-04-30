@@ -6,6 +6,8 @@
 <title>KaraWeb – Des sites qui marquent les esprits</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
     --bg: #080b12;
@@ -33,7 +35,6 @@
     cursor: none;
   }
 
-  /* CURSOR */
   .cursor {
     width: 12px; height: 12px;
     background: var(--cyan);
@@ -44,6 +45,7 @@
     transition: transform 0.1s ease;
     mix-blend-mode: screen;
   }
+
   .cursor-ring {
     width: 36px; height: 36px;
     border: 1px solid rgba(0,240,255,0.4);
@@ -54,7 +56,6 @@
     transition: all 0.15s ease;
   }
 
-  /* NAV */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -81,11 +82,13 @@
 
   .nav-links {
     display: flex;
-    gap: 40px;
+    gap: 34px;
     list-style: none;
+    align-items: center;
   }
 
-  .nav-links a {
+  .nav-links a,
+  .nav-links button {
     color: var(--muted);
     text-decoration: none;
     font-size: 0.88rem;
@@ -93,22 +96,26 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: none;
   }
-  .nav-links a:hover { color: var(--white); }
+
+  .nav-links a:hover,
+  .nav-links button:hover { color: var(--white); }
 
   .nav-cta {
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: var(--bg) !important;
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-weight: 700 !important;
+    background: linear-gradient(135deg, var(--cyan), var(--violet)) !important;
     color: #000 !important;
+    padding: 10px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
     -webkit-text-fill-color: #000 !important;
-    transition: opacity 0.2s !important;
   }
-  .nav-cta:hover { opacity: 0.85; color: #000 !important; }
 
-  /* HERO */
+  .nav-cta:hover { opacity: 0.85; }
+
   .hero {
     min-height: 100vh;
     display: flex;
@@ -121,11 +128,7 @@
     overflow: hidden;
   }
 
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; }
 
   .grid-lines {
     position: absolute;
@@ -142,17 +145,20 @@
     filter: blur(80px);
     animation: floatOrb 8s ease-in-out infinite;
   }
+
   .glow-orb-1 {
     width: 500px; height: 500px;
     background: radial-gradient(circle, rgba(0,240,255,0.12), transparent 70%);
     top: -100px; left: -100px;
   }
+
   .glow-orb-2 {
     width: 600px; height: 600px;
     background: radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%);
     bottom: -150px; right: -100px;
     animation-delay: -4s;
   }
+
   .glow-orb-3 {
     width: 300px; height: 300px;
     background: radial-gradient(circle, rgba(244,114,182,0.08), transparent 70%);
@@ -182,12 +188,14 @@
     margin-bottom: 32px;
     animation: fadeUp 0.6s ease both;
   }
+
   .badge-dot {
     width: 6px; height: 6px;
     background: var(--cyan);
     border-radius: 50%;
     animation: pulse 2s infinite;
   }
+
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
 
   .hero h1 {
@@ -200,7 +208,7 @@
     animation: fadeUp 0.6s ease 0.1s both;
   }
 
-  .hero h1 .gradient-text {
+  .gradient-text {
     background: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 50%, var(--pink) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -225,44 +233,39 @@
     animation: fadeUp 0.6s ease 0.3s both;
   }
 
-  .btn-primary {
+  .btn-primary, .btn-secondary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: #000;
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     padding: 14px 32px;
     border-radius: 10px;
     text-decoration: none;
-    border: none;
     cursor: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: #000;
+    border: none;
     box-shadow: 0 0 30px rgba(0,240,255,0.25);
   }
+
   .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 50px rgba(0,240,255,0.4);
   }
 
   .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
     background: transparent;
     color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 14px 32px;
-    border-radius: 10px;
-    text-decoration: none;
     border: 1px solid var(--border);
-    cursor: none;
-    transition: border-color 0.2s, background 0.2s;
   }
+
   .btn-secondary:hover {
     border-color: rgba(255,255,255,0.2);
     background: rgba(255,255,255,0.03);
@@ -275,7 +278,9 @@
     margin-top: 70px;
     animation: fadeUp 0.6s ease 0.4s both;
   }
+
   .stat { text-align: center; }
+
   .stat-num {
     font-family: 'Syne', sans-serif;
     font-size: 2rem;
@@ -285,6 +290,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
   .stat-label {
     font-size: 0.78rem;
     color: var(--muted);
@@ -298,8 +304,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* SECTION */
   section { padding: 100px 60px; }
+
   .section-label {
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -308,6 +314,7 @@
     font-weight: 600;
     margin-bottom: 12px;
   }
+
   .section-title {
     font-family: 'Syne', sans-serif;
     font-size: clamp(1.8rem, 3.5vw, 2.8rem);
@@ -316,6 +323,7 @@
     line-height: 1.15;
     margin-bottom: 16px;
   }
+
   .section-sub {
     color: var(--muted);
     font-size: 1.05rem;
@@ -323,11 +331,12 @@
     max-width: 540px;
     font-weight: 300;
   }
+
   .section-header { margin-bottom: 60px; }
 
-  /* SERVICES */
   .services { background: var(--bg2); }
-  .services-grid {
+
+  .services-grid, .pricing-grid, .testimonials-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
@@ -335,29 +344,19 @@
     margin: 0 auto;
   }
 
-  .service-card {
+  .service-card, .plan-card, .testimonial-card, .chat-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 36px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.3s, transform 0.3s;
   }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .service-card:hover {
+
+  .service-card:hover, .plan-card:hover, .testimonial-card:hover {
     border-color: rgba(0,240,255,0.2);
     transform: translateY(-4px);
   }
-  .service-card:hover::before { opacity: 1; }
 
   .service-icon {
     width: 52px; height: 52px;
@@ -368,23 +367,24 @@
     font-size: 1.4rem;
     margin-bottom: 24px;
   }
+
   .icon-cyan { background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.2); }
   .icon-violet { background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); }
   .icon-pink { background: rgba(244,114,182,0.1); border: 1px solid rgba(244,114,182,0.2); }
 
-  .service-card h3 {
+  .service-card h3, .plan-card h3 {
     font-family: 'Syne', sans-serif;
     font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 12px;
   }
-  .service-card p {
+
+  .service-card p, .plan-card p, .chat-card p {
     color: var(--muted);
     font-size: 0.92rem;
     line-height: 1.65;
   }
 
-  /* PRICING */
   .pricing { background: var(--bg); }
   .pricing-wrapper { max-width: 1100px; margin: 0 auto; }
 
@@ -395,12 +395,10 @@
     margin-bottom: 50px;
     justify-content: center;
   }
-  .toggle-label {
-    font-size: 0.9rem;
-    color: var(--muted);
-    font-weight: 500;
-  }
+
+  .toggle-label { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
   .toggle-label.active { color: var(--white); }
+
   .toggle-switch {
     width: 52px; height: 28px;
     background: rgba(0,240,255,0.15);
@@ -410,6 +408,7 @@
     position: relative;
     transition: background 0.3s;
   }
+
   .toggle-thumb {
     width: 20px; height: 20px;
     background: var(--cyan);
@@ -419,7 +418,9 @@
     transition: transform 0.3s;
     box-shadow: 0 0 10px rgba(0,240,255,0.5);
   }
+
   .toggle-switch.annual .toggle-thumb { transform: translateX(24px); }
+
   .save-badge {
     background: rgba(34,211,165,0.12);
     border: 1px solid rgba(34,211,165,0.3);
@@ -430,22 +431,11 @@
     border-radius: 100px;
   }
 
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    align-items: start;
-  }
-
   .plan-card {
-    background: var(--card);
-    border: 1px solid var(--border);
     border-radius: 20px;
     padding: 40px 36px;
-    position: relative;
     transition: transform 0.3s, border-color 0.3s;
   }
-  .plan-card:hover { transform: translateY(-6px); }
 
   .plan-card.featured {
     border-color: rgba(0,240,255,0.3);
@@ -465,7 +455,6 @@
     padding: 4px 16px;
     border-radius: 100px;
     white-space: nowrap;
-    letter-spacing: 0.05em;
   }
 
   .plan-name {
@@ -485,6 +474,7 @@
     line-height: 1;
     margin-bottom: 4px;
   }
+
   .plan-price span { font-size: 1.2rem; font-weight: 400; letter-spacing: 0; }
   .plan-price .per { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
 
@@ -507,6 +497,7 @@
     gap: 12px;
     margin-bottom: 32px;
   }
+
   .plan-features li {
     display: flex;
     align-items: center;
@@ -514,7 +505,8 @@
     font-size: 0.9rem;
     color: var(--text);
   }
-  .plan-features li .check {
+
+  .check, .cross {
     width: 18px; height: 18px;
     border-radius: 50%;
     display: flex;
@@ -522,23 +514,21 @@
     justify-content: center;
     font-size: 0.65rem;
     flex-shrink: 0;
+  }
+
+  .check {
     background: rgba(34,211,165,0.15);
     color: var(--green);
     border: 1px solid rgba(34,211,165,0.3);
   }
-  .plan-features li .cross {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    flex-shrink: 0;
+
+  .cross {
     background: rgba(100,116,139,0.1);
     color: var(--muted);
     border: 1px solid rgba(100,116,139,0.15);
   }
-  .plan-features li.muted-item { color: var(--muted); }
+
+  .muted-item { color: var(--muted) !important; }
 
   .btn-plan {
     display: block;
@@ -554,127 +544,27 @@
     transition: all 0.2s;
     border: none;
   }
+
   .btn-plan-primary {
     background: linear-gradient(135deg, var(--cyan), var(--violet));
     color: #000;
     box-shadow: 0 0 30px rgba(0,240,255,0.2);
   }
-  .btn-plan-primary:hover {
-    box-shadow: 0 0 50px rgba(0,240,255,0.35);
-    transform: translateY(-1px);
-  }
+
   .btn-plan-outline {
     background: transparent;
     color: var(--text);
     border: 1px solid var(--border);
   }
-  .btn-plan-outline:hover {
-    border-color: rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.03);
-  }
+
   .btn-plan-ghost {
     background: rgba(168,85,247,0.1);
     color: var(--violet);
     border: 1px solid rgba(168,85,247,0.25);
   }
-  .btn-plan-ghost:hover {
-    background: rgba(168,85,247,0.18);
-  }
 
-  /* DEVIS */
-  .devis {
-    background: var(--bg2);
-  }
-  .devis-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-  }
-
-  .devis-features {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .devis-feature {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .devis-feature-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    background: rgba(168,85,247,0.1);
-    border: 1px solid rgba(168,85,247,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-  .devis-feature-text h4 {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .devis-feature-text p {
-    color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .devis-form {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 36px;
-  }
-  .devis-form h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-  }
-
-  .form-group { margin-bottom: 16px; }
-  .form-group label {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--muted);
-    font-weight: 500;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s;
-    cursor: none;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    border-color: rgba(0,240,255,0.4);
-  }
-  .form-group select { appearance: none; }
-  .form-group textarea { resize: none; height: 80px; }
-
-  /* PROCESS */
   .process { background: var(--bg); }
+
   .process-steps {
     max-width: 900px;
     margin: 0 auto;
@@ -683,16 +573,7 @@
     gap: 0;
     position: relative;
   }
-  .process-steps::before {
-    content: '';
-    position: absolute;
-    left: 28px;
-    top: 40px;
-    bottom: 40px;
-    width: 1px;
-    background: linear-gradient(to bottom, var(--cyan), var(--violet), var(--pink));
-    opacity: 0.3;
-  }
+
   .process-step {
     display: flex;
     gap: 28px;
@@ -700,6 +581,7 @@
     padding: 28px 0;
     position: relative;
   }
+
   .step-num {
     width: 56px; height: 56px;
     border-radius: 50%;
@@ -712,9 +594,8 @@
     font-weight: 800;
     font-size: 1rem;
     flex-shrink: 0;
-    position: relative;
-    z-index: 1;
   }
+
   .step-num.c { border-color: rgba(0,240,255,0.4); color: var(--cyan); }
   .step-num.v { border-color: rgba(168,85,247,0.4); color: var(--violet); }
   .step-num.p { border-color: rgba(244,114,182,0.4); color: var(--pink); }
@@ -727,30 +608,17 @@
     margin-bottom: 6px;
     margin-top: 14px;
   }
+
   .step-content p {
     color: var(--muted);
     font-size: 0.9rem;
     line-height: 1.6;
   }
 
-  /* TESTIMONIALS */
   .testimonials { background: var(--bg2); }
-  .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  .testimonial-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    transition: border-color 0.3s;
-  }
-  .testimonial-card:hover { border-color: rgba(168,85,247,0.25); }
+
   .testimonial-stars { color: #fbbf24; font-size: 0.85rem; margin-bottom: 14px; }
+
   .testimonial-text {
     color: var(--text);
     font-size: 0.9rem;
@@ -758,11 +626,13 @@
     margin-bottom: 20px;
     font-style: italic;
   }
+
   .testimonial-author {
     display: flex;
     align-items: center;
     gap: 12px;
   }
+
   .author-avatar {
     width: 38px; height: 38px;
     border-radius: 50%;
@@ -773,17 +643,52 @@
     font-size: 0.85rem;
     flex-shrink: 0;
   }
+
   .av1 { background: rgba(0,240,255,0.15); color: var(--cyan); border: 1px solid rgba(0,240,255,0.3); }
   .av2 { background: rgba(168,85,247,0.15); color: var(--violet); border: 1px solid rgba(168,85,247,0.3); }
   .av3 { background: rgba(244,114,182,0.15); color: var(--pink); border: 1px solid rgba(244,114,182,0.3); }
+
   .author-name {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 0.9rem;
   }
+
   .author-role { font-size: 0.78rem; color: var(--muted); }
 
-  /* CTA FINAL */
+  .chat-section { background: var(--bg2); }
+
+  .chat-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .chat-card {
+    border-radius: 20px;
+    padding: 38px;
+    background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(168,85,247,0.05)), var(--card);
+  }
+
+  .chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .chat-point {
+    display: flex;
+    gap: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .chat-point strong { color: var(--text); }
+
   .cta-final {
     background: var(--bg);
     text-align: center;
@@ -791,12 +696,15 @@
     position: relative;
     overflow: hidden;
   }
+
   .cta-final-bg {
     position: absolute;
     inset: 0;
     background: radial-gradient(ellipse at center, rgba(0,240,255,0.06) 0%, transparent 60%);
   }
+
   .cta-final-content { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
   .cta-final h2 {
     font-family: 'Syne', sans-serif;
     font-size: clamp(2rem, 4vw, 3.2rem);
@@ -805,6 +713,7 @@
     margin-bottom: 16px;
     line-height: 1.1;
   }
+
   .cta-final p {
     color: var(--muted);
     font-size: 1.05rem;
@@ -812,7 +721,6 @@
     line-height: 1.6;
   }
 
-  /* FOOTER */
   footer {
     background: var(--bg2);
     border-top: 1px solid var(--border);
@@ -821,6 +729,7 @@
     align-items: center;
     justify-content: space-between;
   }
+
   .footer-logo {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -830,78 +739,61 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
   .footer-links {
     display: flex;
     gap: 28px;
     list-style: none;
   }
+
   .footer-links a {
     color: var(--muted);
     text-decoration: none;
     font-size: 0.85rem;
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--white); }
-  .footer-copy {
-    color: var(--muted);
-    font-size: 0.82rem;
   }
 
-  /* SCROLL REVEAL */
+  .footer-copy { color: var(--muted); font-size: 0.82rem; }
+
   .reveal {
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
+
   .reveal.visible {
     opacity: 1;
     transform: translateY(0);
   }
 
-  /* STRIPE BADGE */
-  .stripe-note {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 24px;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-  .stripe-note svg { opacity: 0.6; }
-
-  /* MOBILE */
   @media (max-width: 900px) {
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
     nav { padding: 16px 24px; }
     .nav-links { display: none; }
     section { padding: 70px 24px; }
-    .services-grid, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
-    .devis-inner { grid-template-columns: 1fr; }
+    .services-grid, .pricing-grid, .testimonials-grid, .chat-inner { grid-template-columns: 1fr; }
     .hero-stats { gap: 32px; }
     footer { flex-direction: column; gap: 20px; text-align: center; }
   }
 </style>
 </head>
-<body>
 
-<!-- CURSOR -->
+<body>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- NAV -->
 <nav>
   <div class="logo">KaraWeb</div>
   <ul class="nav-links">
     <li><a href="#services">Services</a></li>
     <li><a href="#tarifs">Tarifs</a></li>
     <li><a href="#processus">Processus</a></li>
-    <li><a href="#devis">Devis</a></li>
-    <li><a href="#devis" class="nav-cta">Démarrer →</a>
-<a href="auth.html" style="color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;margin-left:16px;">Mon espace →</a></li>
+    <li><a href="#discussion">Discussion</a></li>
+    <li><button onclick="goSpace()">Mon espace</button></li>
+    <li><button class="nav-cta" onclick="goProjectChat()">Discuter</button></li>
   </ul>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-bg">
     <div class="grid-lines"></div>
@@ -909,20 +801,25 @@
     <div class="glow-orb glow-orb-2"></div>
     <div class="glow-orb glow-orb-3"></div>
   </div>
+
   <div class="hero-content">
     <div class="hero-badge">
       <div class="badge-dot"></div>
       Agence web nouvelle génération
     </div>
+
     <h1>
       Des sites qui<br>
       <span class="gradient-text">marquent les esprits</span>
     </h1>
-    <p>KaraWeb conçoit des sites web modernes, rapides et performants. Abonnement tout inclus ou projet sur mesure — vous choisissez.</p>
+
+    <p>KaraWeb conçoit des sites web modernes, rapides et performants. Abonnement tout inclus ou projet sur mesure — vous discutez directement avec nous depuis votre espace.</p>
+
     <div class="hero-actions">
-      <a href="#tarifs" class="btn-primary">Voir les offres →</a>
-      <a href="#devis" class="btn-secondary">Demander un devis</a>
+      <button class="btn-primary" onclick="goProjectChat()">Discuter de mon projet →</button>
+      <button class="btn-secondary" onclick="goSpace()">Accéder à mon espace</button>
     </div>
+
     <div class="hero-stats">
       <div class="stat">
         <div class="stat-num">50+</div>
@@ -930,49 +827,50 @@
       </div>
       <div class="stat">
         <div class="stat-num">100%</div>
-        <div class="stat-label">Satisfaction</div>
+        <div class="stat-label">Suivi client</div>
       </div>
       <div class="stat">
-        <div class="stat-num">48h</div>
-        <div class="stat-label">Délai moyen</div>
+        <div class="stat-num">24h</div>
+        <div class="stat-label">Réponse moyenne</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SERVICES -->
 <section class="services" id="services">
   <div class="section-header">
     <div class="section-label">Ce qu'on fait</div>
     <div class="section-title">Tout ce dont vous avez besoin</div>
-    <div class="section-sub">Du site vitrine simple à l'application web complexe — on couvre tout le spectre.</div>
+    <div class="section-sub">Du site vitrine simple à l'application web plus complexe — on construit proprement selon votre projet.</div>
   </div>
+
   <div class="services-grid reveal">
     <div class="service-card">
       <div class="service-icon icon-cyan">🌐</div>
       <h3>Site Vitrine</h3>
-      <p>Présence en ligne professionnelle avec design moderne, responsive et optimisé SEO. Hébergement et maintenance inclus dans l'abonnement.</p>
+      <p>Présence en ligne professionnelle avec design moderne, responsive et optimisé pour présenter votre activité.</p>
     </div>
+
     <div class="service-card">
       <div class="service-icon icon-violet">⚡</div>
       <h3>Site Avancé</h3>
-      <p>Prise de rendez-vous, paiement en ligne, espace client, formulaires avancés. Développement sur mesure selon vos besoins.</p>
+      <p>Prise de rendez-vous, espace client, formulaires avancés ou fonctionnalités particulières selon vos besoins.</p>
     </div>
+
     <div class="service-card">
       <div class="service-icon icon-pink">🛒</div>
       <h3>E-Commerce</h3>
-      <p>Boutique en ligne complète avec gestion de stock, paiement sécurisé, tableau de bord et intégrations logistiques.</p>
+      <p>Boutique en ligne avec paiement sécurisé, catalogue, gestion de produits et suivi des commandes.</p>
     </div>
   </div>
 </section>
 
-<!-- TARIFS -->
 <section class="pricing" id="tarifs">
   <div class="pricing-wrapper">
     <div class="section-header">
       <div class="section-label">Tarifs</div>
       <div class="section-title">Simple et transparent</div>
-      <div class="section-sub">Abonnement mensuel ou annuel pour les sites basiques. Devis pour tout le reste.</div>
+      <div class="section-sub">Les paiements Stripe seront branchés plus tard. Pour l’instant, le client lance une discussion et vous gérez la suite depuis l’admin.</div>
     </div>
 
     <div class="pricing-toggle">
@@ -985,7 +883,6 @@
     </div>
 
     <div class="pricing-grid reveal">
-      <!-- STARTER -->
       <div class="plan-card">
         <div class="plan-name">Starter</div>
         <div class="plan-price" id="price-starter">29<span>€</span><span class="per">/mois</span></div>
@@ -993,17 +890,14 @@
         <div class="plan-divider"></div>
         <ul class="plan-features">
           <li><span class="check">✓</span> Site vitrine 1–5 pages</li>
-          <li><span class="check">✓</span> Design moderne & responsive</li>
+          <li><span class="check">✓</span> Design responsive</li>
           <li><span class="check">✓</span> Hébergement inclus</li>
           <li><span class="check">✓</span> Maintenance mensuelle</li>
-          <li><span class="check">✓</span> Certificat SSL</li>
-          <li class="muted-item"><span class="cross">✗</span> Formulaire de contact</li>
-          <li class="muted-item"><span class="cross">✗</span> Animations avancées</li>
+          <li class="muted-item"><span class="cross">✗</span> Fonctionnalités avancées</li>
         </ul>
-        <a href="#devis" class="btn-plan btn-plan-outline">Commencer →</a>
+        <button class="btn-plan btn-plan-outline" onclick="goProjectChat()">Discuter de Starter →</button>
       </div>
 
-      <!-- PRO (featured) -->
       <div class="plan-card featured">
         <div class="plan-popular">⭐ Le plus populaire</div>
         <div class="plan-name">Pro</div>
@@ -1012,89 +906,82 @@
         <div class="plan-divider"></div>
         <ul class="plan-features">
           <li><span class="check">✓</span> Site vitrine jusqu'à 10 pages</li>
-          <li><span class="check">✓</span> Design premium & animations</li>
-          <li><span class="check">✓</span> Hébergement inclus</li>
+          <li><span class="check">✓</span> Design premium</li>
           <li><span class="check">✓</span> Maintenance mensuelle</li>
-          <li><span class="check">✓</span> Certificat SSL</li>
           <li><span class="check">✓</span> Formulaire de contact</li>
-          <li><span class="check">✓</span> Optimisation SEO avancée</li>
+          <li><span class="check">✓</span> Optimisation SEO</li>
         </ul>
-        <a href="#devis" class="btn-plan btn-plan-primary">Choisir Pro →</a>
+        <button class="btn-plan btn-plan-primary" onclick="goProjectChat()">Discuter de Pro →</button>
       </div>
 
-      <!-- SUR MESURE -->
       <div class="plan-card">
         <div class="plan-name">Sur Mesure</div>
         <div class="plan-price">?<span>€</span></div>
         <div class="plan-annual-note">Selon le projet</div>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li><span class="check">✓</span> Fonctionnalités illimitées</li>
-          <li><span class="check">✓</span> Prise de RDV / Paiement</li>
+          <li><span class="check">✓</span> Fonctionnalités spécifiques</li>
           <li><span class="check">✓</span> Espace client / Dashboard</li>
-          <li><span class="check">✓</span> Intégrations tierces</li>
-          <li><span class="check">✓</span> E-commerce complet</li>
+          <li><span class="check">✓</span> Paiement / RDV / E-commerce</li>
           <li><span class="check">✓</span> Support prioritaire</li>
-          <li><span class="check">✓</span> Livraison rapide garantie</li>
         </ul>
-        <a href="#devis" class="btn-plan btn-plan-ghost">Demander un devis →</a>
+        <button class="btn-plan btn-plan-ghost" onclick="goProjectChat()">Présenter mon projet →</button>
       </div>
-    </div>
-
-    <div class="stripe-note">
-      🔒 Paiement 100% sécurisé via Stripe — CB, Apple Pay, Google Pay
     </div>
   </div>
 </section>
 
-<!-- PROCESSUS -->
 <section class="process" id="processus">
   <div class="section-header">
     <div class="section-label">Comment ça marche</div>
-    <div class="section-title">De zéro à en ligne<br>en quelques jours</div>
+    <div class="section-title">Un suivi clair depuis l’espace client</div>
   </div>
+
   <div class="process-steps reveal">
     <div class="process-step">
       <div class="step-num c">01</div>
       <div class="step-content">
-        <h3>Briefing & Devis</h3>
-        <p>Vous remplissez le formulaire de devis. On revient vers vous sous 24h avec une proposition détaillée et un délai précis.</p>
+        <h3>Discussion</h3>
+        <p>Le client explique son projet directement depuis son espace.</p>
       </div>
     </div>
+
     <div class="process-step">
       <div class="step-num v">02</div>
       <div class="step-content">
-        <h3>Validation & Paiement</h3>
-        <p>Vous validez l'offre et réglez via Stripe. Paiement sécurisé, reçu instantané, accès à votre espace client.</p>
+        <h3>Analyse</h3>
+        <p>Vous répondez depuis l’espace admin et vous clarifiez les besoins.</p>
       </div>
     </div>
+
     <div class="process-step">
       <div class="step-num p">03</div>
       <div class="step-content">
-        <h3>Conception & Développement</h3>
-        <p>On conçoit votre site. Vous recevez une maquette pour validation avant le développement final.</p>
+        <h3>Commande</h3>
+        <p>La commande apparaît dans l’espace client et dans votre admin.</p>
       </div>
     </div>
+
     <div class="process-step">
       <div class="step-num g">04</div>
       <div class="step-content">
-        <h3>Mise en ligne & Suivi</h3>
-        <p>Votre site est mis en ligne sur votre domaine. Hébergement, SSL et maintenance gérés par KaraWeb.</p>
+        <h3>Suivi</h3>
+        <p>Le client suit l’avancement et vous continuez à échanger avec lui.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TEMOIGNAGES -->
 <section class="testimonials">
   <div class="section-header">
     <div class="section-label">Avis clients</div>
     <div class="section-title">Ils nous font confiance</div>
   </div>
+
   <div class="testimonials-grid reveal">
     <div class="testimonial-card">
       <div class="testimonial-stars">★★★★★</div>
-      <div class="testimonial-text">"Livraison ultra rapide et résultat vraiment au-dessus de mes attentes. Mon site est moderne, fluide et mes clients adorent."</div>
+      <div class="testimonial-text">"Livraison rapide et résultat vraiment propre. Mon site est moderne, fluide et clair."</div>
       <div class="testimonial-author">
         <div class="author-avatar av1">TM</div>
         <div>
@@ -1103,9 +990,10 @@
         </div>
       </div>
     </div>
+
     <div class="testimonial-card">
       <div class="testimonial-stars">★★★★★</div>
-      <div class="testimonial-text">"J'avais zéro présence en ligne. KaraWeb m'a tout géré en moins d'une semaine. L'abonnement mensuel c'est parfait pour mon budget."</div>
+      <div class="testimonial-text">"KaraWeb m'a tout géré simplement. Le suivi client est rassurant."</div>
       <div class="testimonial-author">
         <div class="author-avatar av2">SL</div>
         <div>
@@ -1114,9 +1002,10 @@
         </div>
       </div>
     </div>
+
     <div class="testimonial-card">
       <div class="testimonial-stars">★★★★★</div>
-      <div class="testimonial-text">"Super communication, design soigné et le site tourne parfaitement. Je recommande à 100% pour toute petite entreprise."</div>
+      <div class="testimonial-text">"Très bonne communication, design soigné et accompagnement sérieux."</div>
       <div class="testimonial-author">
         <div class="author-avatar av3">RD</div>
         <div>
@@ -1128,96 +1017,97 @@
   </div>
 </section>
 
-<!-- DEVIS FORM -->
-<section class="devis" id="devis">
-  <div class="devis-inner">
+<section class="chat-section" id="discussion">
+  <div class="chat-inner">
     <div>
-      <div class="section-label">Projet sur mesure</div>
-      <div class="section-title">Parlons de votre projet</div>
-      <p class="section-sub" style="margin-bottom: 40px;">Remplissez le formulaire, on vous répond sous 24h avec une proposition complète.</p>
-      <div class="devis-features">
-        <div class="devis-feature">
-          <div class="devis-feature-icon">⚡</div>
-          <div class="devis-feature-text">
-            <h4>Réponse rapide</h4>
-            <p>Devis détaillé envoyé sous 24h maximum.</p>
-          </div>
-        </div>
-        <div class="devis-feature">
-          <div class="devis-feature-icon">🎯</div>
-          <div class="devis-feature-text">
-            <h4>100% personnalisé</h4>
-            <p>Chaque projet est unique, chaque devis aussi.</p>
-          </div>
-        </div>
-        <div class="devis-feature">
-          <div class="devis-feature-icon">🔒</div>
-          <div class="devis-feature-text">
-            <h4>Sans engagement</h4>
-            <p>Le devis est gratuit et sans obligation.</p>
-          </div>
-        </div>
+      <div class="section-label">Discussion projet</div>
+      <div class="section-title">Expliquez votre projet directement dans votre espace</div>
+      <p class="section-sub">Plus besoin de formulaire froid. Le client se connecte, lance une conversation, et vous répondez depuis l’espace administrateur.</p>
+
+      <div class="chat-list">
+        <div class="chat-point">💬 <div><strong>Conversation directe</strong><br>Le client peut poser ses questions et décrire son besoin.</div></div>
+        <div class="chat-point">📦 <div><strong>Suivi des commandes</strong><br>Chaque commande peut être suivie depuis l’espace client.</div></div>
+        <div class="chat-point">🧑‍💼 <div><strong>Gestion admin</strong><br>Vous voyez les clients, commandes et conversations depuis l’admin.</div></div>
       </div>
     </div>
-    <div class="devis-form reveal">
-      <h3>Demander un devis gratuit</h3>
-      <div class="form-group">
-        <label>Votre nom</label>
-        <input type="text" placeholder="Jean Dupont">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="jean@exemple.com">
-      </div>
-      <div class="form-group">
-        <label>Type de projet</label>
-        <select>
-          <option>Site vitrine simple</option>
-          <option>Site avec formulaires</option>
-          <option>Prise de rendez-vous</option>
-          <option>E-commerce</option>
-          <option>Application web</option>
-          <option>Autre</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Décrivez votre projet</label>
-        <textarea placeholder="Parlez-nous de votre activité, vos besoins, vos délais..."></textarea>
-      </div>
-      <button class="btn-primary" style="width:100%; justify-content:center; border:none; font-size:0.95rem;" onclick="submitForm()">
-        Envoyer ma demande →
-      </button>
+
+    <div class="chat-card reveal">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;margin-bottom:14px;">Prêt à parler de votre site ?</h3>
+      <p style="margin-bottom:26px;">Connectez-vous ou créez un compte pour commencer la discussion avec KaraWeb.</p>
+      <button class="btn-primary" style="width:100%;" onclick="goProjectChat()">Discuter de mon projet →</button>
     </div>
   </div>
 </section>
 
-<!-- CTA FINAL -->
 <section class="cta-final">
   <div class="cta-final-bg"></div>
   <div class="cta-final-content reveal">
-    <h2>Prêt à lancer votre <span style="background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">présence en ligne ?</span></h2>
-    <p>Rejoignez les clients KaraWeb et obtenez un site professionnel en quelques jours — hébergement et maintenance inclus.</p>
+    <h2>Prêt à lancer votre <span class="gradient-text">présence en ligne ?</span></h2>
+    <p>Discutez de votre projet avec KaraWeb et obtenez un suivi clair depuis votre espace client.</p>
     <div class="hero-actions" style="justify-content:center;">
-      <a href="#tarifs" class="btn-primary">Voir les offres →</a>
-      <a href="#devis" class="btn-secondary">Demander un devis</a>
+      <button class="btn-primary" onclick="goProjectChat()">Discuter de mon projet →</button>
+      <button class="btn-secondary" onclick="goSpace()">Mon espace</button>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-logo">KaraWeb</div>
   <ul class="footer-links">
     <li><a href="#services">Services</a></li>
     <li><a href="#tarifs">Tarifs</a></li>
-    <li><a href="#devis">Devis</a></li>
+    <li><a href="#discussion">Discussion</a></li>
     <li><a href="#">Mentions légales</a></li>
   </ul>
-  <div class="footer-copy">© 2025 KaraWeb. Tous droits réservés.</div>
+  <div class="footer-copy">© 2026 KaraWeb. Tous droits réservés.</div>
 </footer>
 
 <script>
-  // CURSOR
+  const db = window.supabase.createClient(
+    'https://midkwlribyrryremnnyd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU'
+  );
+
+  async function getDestination() {
+    const { data } = await db.auth.getUser();
+
+    if (!data || !data.user) {
+      return 'auth.html';
+    }
+
+    const { data: profile } = await db
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profile && profile.role === 'admin') {
+      return 'admin.html';
+    }
+
+    return 'dashboard.html';
+  }
+
+  async function goSpace() {
+    window.location.href = await getDestination();
+  }
+
+  async function goProjectChat() {
+    const destination = await getDestination();
+
+    if (destination === 'auth.html') {
+      window.location.href = 'auth.html';
+      return;
+    }
+
+    if (destination === 'admin.html') {
+      window.location.href = 'admin.html';
+      return;
+    }
+
+    window.location.href = 'dashboard.html#messages';
+  }
+
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
   let mx = 0, my = 0, rx = 0, ry = 0;
@@ -1250,10 +1140,11 @@
     });
   });
 
-  // TOGGLE BILLING
   let isAnnual = false;
+
   function toggleBilling() {
     isAnnual = !isAnnual;
+
     const toggle = document.getElementById('toggleSwitch');
     const monthlyLabel = document.getElementById('monthlyLabel');
     const annualLabel = document.getElementById('annualLabel');
@@ -1265,8 +1156,8 @@
     if (isAnnual) {
       document.getElementById('price-starter').innerHTML = '23<span>€</span><span class="per">/mois</span>';
       document.getElementById('price-pro').innerHTML = '39<span>€</span><span class="per">/mois</span>';
-      document.getElementById('note-starter').textContent = 'Facturé 279€/an (économisez 69€)';
-      document.getElementById('note-pro').textContent = 'Facturé 468€/an (économisez 120€)';
+      document.getElementById('note-starter').textContent = 'Facturé 279€/an';
+      document.getElementById('note-pro').textContent = 'Facturé 468€/an';
     } else {
       document.getElementById('price-starter').innerHTML = '29<span>€</span><span class="per">/mois</span>';
       document.getElementById('price-pro').innerHTML = '49<span>€</span><span class="per">/mois</span>';
@@ -1275,7 +1166,6 @@
     }
   }
 
-  // SCROLL REVEAL
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -1285,18 +1175,8 @@
       }
     });
   }, { threshold: 0.1 });
-  reveals.forEach(r => observer.observe(r));
 
-  // FORM SUBMIT MOCK
-  function submitForm() {
-    const btn = event.target;
-    btn.textContent = '✓ Demande envoyée !';
-    btn.style.background = 'linear-gradient(135deg, #22d3a5, #22d3a5)';
-    setTimeout(() => {
-      btn.textContent = 'Envoyer ma demande →';
-      btn.style.background = '';
-    }, 3000);
-  }
+  reveals.forEach(r => observer.observe(r));
 </script>
 </body>
 </html>
