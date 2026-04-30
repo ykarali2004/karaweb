@@ -31,274 +31,195 @@
       min-height:100vh;
     }
 
-    .loader-wrap{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-
-    .loader-box{
-      width:100%;
-      max-width:520px;
-      background:rgba(17,24,39,.88);
-      border:1px solid var(--border);
-      border-radius:20px;
-      padding:32px;
-      text-align:center;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-
-    .brand{
-      font-size:38px;
-      font-weight:800;
-      letter-spacing:-1px;
-      margin:0 0 12px;
-      background:linear-gradient(90deg,var(--cyan),var(--violet));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
+    .loader-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .loader-box{width:100%;max-width:520px;background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:20px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    .brand{font-size:38px;font-weight:800;letter-spacing:-1px;margin:0 0 12px;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
     #app{display:none}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    .sidebar{background:rgba(10,14,24,.92);border-right:1px solid var(--border);padding:22px}
+    .logo{font-size:30px;font-weight:800;letter-spacing:-1px;margin:0 0 24px;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:6px 10px;margin-bottom:24px}
+    .nav{display:flex;flex-direction:column;gap:10px}
+    .nav button{width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:14px 16px;border-radius:12px;text-align:left;cursor:pointer;font-size:15px;transition:.2s ease}
+    .nav button:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
+    .nav button.active{background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));border-color:rgba(0,231,255,.18)}
+    .admin-card{margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .admin-name{font-size:18px;font-weight:700;margin:0 0 6px}
+    .admin-mail{font-size:13px;color:var(--muted);word-break:break-word;margin:0 0 14px}
+    .btn{width:100%;border:0;padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:10px}
+    .btn-primary{background:linear-gradient(90deg,var(--cyan),var(--violet));color:#061018}
+    .btn-secondary{background:#fff;color:#000}
+    .main{padding:28px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+    .title{margin:0;font-size:34px;letter-spacing:-1px}
+    .subtitle{margin:8px 0 0;color:var(--muted);font-size:15px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+    .card{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .small-label{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .big-number{font-size:34px;font-weight:800;letter-spacing:-1px;margin:0}
+    .page{display:none}
+    .page.active{display:block}
+    .section-title{font-size:22px;margin:0 0 14px}
+    .list{display:grid;gap:14px}
+    .item{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .item-title{font-size:18px;font-weight:700;margin:0 0 8px}
+    .item-text{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+    .badge{display:inline-block;margin-top:10px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .badge.pending{background:rgba(245,158,11,.14);color:#fbbf24;border:1px solid rgba(245,158,11,.18)}
+    .badge.progress{background:rgba(0,231,255,.12);color:var(--cyan);border:1px solid rgba(0,231,255,.16)}
+    .badge.done{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.18)}
+    .badge.cancelled{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.18)}
 
-    .layout{
+    .chat-admin{
       display:grid;
-      grid-template-columns:260px 1fr;
-      min-height:100vh;
-    }
-
-    .sidebar{
-      background:rgba(10,14,24,.92);
-      border-right:1px solid var(--border);
-      padding:22px;
-    }
-
-    .logo{
-      font-size:30px;
-      font-weight:800;
-      letter-spacing:-1px;
-      margin:0 0 24px;
-      background:linear-gradient(90deg,var(--cyan),var(--violet));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
-
-    .tag{
-      display:inline-block;
-      font-size:12px;
-      color:var(--muted);
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:6px 10px;
-      margin-bottom:24px;
-    }
-
-    .nav{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .nav button{
-      width:100%;
-      border:1px solid var(--border);
-      background:transparent;
-      color:var(--text);
-      padding:14px 16px;
-      border-radius:12px;
-      text-align:left;
-      cursor:pointer;
-      font-size:15px;
-      transition:.2s ease;
-    }
-
-    .nav button:hover{
-      border-color:rgba(255,255,255,.18);
-      background:rgba(255,255,255,.03);
-    }
-
-    .nav button.active{
-      background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));
-      border-color:rgba(0,231,255,.18);
-    }
-
-    .admin-card{
-      margin-top:24px;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:16px;
-    }
-
-    .admin-name{
-      font-size:18px;
-      font-weight:700;
-      margin:0 0 6px;
-    }
-
-    .admin-mail{
-      font-size:13px;
-      color:var(--muted);
-      word-break:break-word;
-      margin:0 0 14px;
-    }
-
-    .btn{
-      width:100%;
-      border:0;
-      padding:12px 14px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:700;
-      margin-top:10px;
-    }
-
-    .btn-primary{
-      background:linear-gradient(90deg,var(--cyan),var(--violet));
-      color:#061018;
-    }
-
-    .btn-secondary{
-      background:#fff;
-      color:#000;
-    }
-
-    .main{
-      padding:28px;
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      margin-bottom:24px;
-      flex-wrap:wrap;
-    }
-
-    .title{
-      margin:0;
-      font-size:34px;
-      letter-spacing:-1px;
-    }
-
-    .subtitle{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:15px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:320px 1fr;
       gap:18px;
-      margin-bottom:24px;
+      min-height:620px;
     }
 
-    .card{
+    .conversation-list,
+    .conversation-panel{
       background:rgba(17,24,39,.88);
       border:1px solid var(--border);
       border-radius:18px;
-      padding:20px;
-      box-shadow:0 10px 30px rgba(0,0,0,.18);
+      overflow:hidden;
     }
 
-    .small-label{
+    .conversation-head{
+      padding:18px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+
+    .conversation-head h3{
+      margin:0;
+      font-size:18px;
+    }
+
+    .conversation-head p{
+      margin:6px 0 0;
       color:var(--muted);
       font-size:13px;
-      margin-bottom:10px;
     }
 
-    .big-number{
-      font-size:34px;
-      font-weight:800;
-      letter-spacing:-1px;
-      margin:0;
-    }
-
-    .page{display:none}
-    .page.active{display:block}
-
-    .section-title{
-      font-size:22px;
-      margin:0 0 14px;
-    }
-
-    .list{
+    .conv-items{
       display:grid;
-      gap:14px;
+      max-height:560px;
+      overflow:auto;
     }
 
-    .item{
-      background:rgba(17,24,39,.88);
-      border:1px solid var(--border);
-      border-radius:16px;
+    .conv-item{
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .conv-item:hover{
+      background:rgba(255,255,255,.03);
+    }
+
+    .conv-item.active{
+      background:linear-gradient(90deg, rgba(0,231,255,.12), rgba(139,92,246,.12));
+    }
+
+    .conv-name{
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .conv-preview{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .messages-box{
       padding:18px;
+      height:460px;
+      overflow:auto;
+      display:grid;
+      gap:12px;
+      align-content:start;
     }
 
-    .item-title{
-      font-size:18px;
-      font-weight:700;
-      margin:0 0 8px;
-    }
-
-    .item-text{
-      color:var(--muted);
+    .msg{
+      padding:12px 14px;
+      border-radius:14px;
+      max-width:78%;
+      line-height:1.5;
       font-size:14px;
-      line-height:1.6;
-      margin:0;
+      white-space:pre-wrap;
     }
 
-    .badge{
-      display:inline-block;
-      margin-top:10px;
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
+    .msg.client{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
     }
 
-    .badge.pending{
-      background:rgba(245,158,11,.14);
-      color:#fbbf24;
-      border:1px solid rgba(245,158,11,.18);
-    }
-
-    .badge.progress{
+    .msg.admin{
       background:rgba(0,231,255,.12);
-      color:var(--cyan);
-      border:1px solid rgba(0,231,255,.16);
+      border:1px solid rgba(0,231,255,.18);
+      margin-left:auto;
     }
 
-    .badge.done{
-      background:rgba(34,197,94,.12);
-      color:#86efac;
-      border:1px solid rgba(34,197,94,.18);
+    .msg-meta{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-size:11px;
     }
 
-    .badge.cancelled{
-      background:rgba(239,68,68,.12);
-      color:#fca5a5;
-      border:1px solid rgba(239,68,68,.18);
+    .reply-form{
+      border-top:1px solid var(--border);
+      padding:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    .placeholder{
+    .reply-input{
+      flex:1;
+      min-width:240px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:13px 14px;
+      color:var(--text);
+      outline:none;
+    }
+
+    .reply-btn{
+      border:0;
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      color:#061018;
+      padding:13px 16px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .empty{
       color:var(--muted);
       font-size:14px;
       line-height:1.6;
+      padding:18px;
     }
 
     @media (max-width: 980px){
       .layout{grid-template-columns:1fr}
       .sidebar{border-right:0;border-bottom:1px solid var(--border)}
       .grid{grid-template-columns:1fr 1fr}
+      .chat-admin{grid-template-columns:1fr}
     }
 
     @media (max-width: 680px){
       .grid{grid-template-columns:1fr}
+      .main{padding:18px}
     }
   </style>
 </head>
@@ -356,39 +277,57 @@
               <p class="big-number" id="adminsCount">0</p>
             </div>
             <div class="card">
-              <div class="small-label">En cours</div>
-              <p class="big-number" id="inProgressCount">0</p>
+              <div class="small-label">Conversations</div>
+              <p class="big-number" id="conversationsCount">0</p>
             </div>
           </div>
         </section>
 
         <section id="page-orders" class="page">
           <h3 class="section-title">Toutes les commandes</h3>
-          <div id="ordersList" class="list">
-            <div class="item">
-              <h4 class="item-title">Chargement...</h4>
-              <p class="item-text">Récupération des commandes.</p>
-            </div>
-          </div>
+          <div id="ordersList" class="list"></div>
         </section>
 
         <section id="page-clients" class="page">
           <h3 class="section-title">Tous les clients</h3>
-          <div id="profilesList" class="list">
-            <div class="item">
-              <h4 class="item-title">Chargement...</h4>
-              <p class="item-text">Récupération des profils.</p>
-            </div>
-          </div>
+          <div id="profilesList" class="list"></div>
         </section>
 
         <section id="page-messages" class="page">
-          <h3 class="section-title">Conversations</h3>
-          <div class="card">
-            <p class="placeholder">
-              La messagerie réelle sera branchée ensuite ici.
-              Cette section servira à voir toutes les conversations clients et à leur répondre depuis l’espace admin.
-            </p>
+          <h3 class="section-title">Conversations clients</h3>
+
+          <div class="chat-admin">
+            <div class="conversation-list">
+              <div class="conversation-head">
+                <h3>Clients</h3>
+                <p>Sélectionnez une conversation</p>
+              </div>
+              <div class="conv-items" id="conversationList">
+                <div class="empty">Chargement des conversations...</div>
+              </div>
+            </div>
+
+            <div class="conversation-panel">
+              <div class="conversation-head">
+                <h3 id="selectedClientName">Aucune conversation sélectionnée</h3>
+                <p id="selectedClientInfo">Choisissez un client à gauche.</p>
+              </div>
+
+              <div class="messages-box" id="adminMessagesBox">
+                <div class="empty">Aucune conversation ouverte.</div>
+              </div>
+
+              <form class="reply-form" id="replyForm">
+                <input
+                  type="text"
+                  id="replyInput"
+                  class="reply-input"
+                  placeholder="Répondre au client..."
+                  disabled
+                />
+                <button type="submit" class="reply-btn" id="replyBtn" disabled>Envoyer</button>
+              </form>
+            </div>
           </div>
         </section>
       </main>
@@ -404,6 +343,43 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let currentAdmin = null;
+    let profilesCache = [];
+    let messagesCache = [];
+    let selectedClientId = null;
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      return new Date(value).toLocaleString('fr-FR', {
+        day:'2-digit',
+        month:'2-digit',
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    }
+
+    function goClient() {
+      window.location.href = DASHBOARD_URL;
+    }
+
+    function goSite() {
+      window.location.href = SITE_URL;
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = AUTH_URL;
+    }
 
     function getStatusClass(status) {
       if (!status) return 'pending';
@@ -443,19 +419,6 @@
       });
     }
 
-    function goClient() {
-      window.location.href = DASHBOARD_URL;
-    }
-
-    function goSite() {
-      window.location.href = SITE_URL;
-    }
-
-    async function logout() {
-      await client.auth.signOut();
-      window.location.href = AUTH_URL;
-    }
-
     async function loadProfiles() {
       const profilesList = document.getElementById('profilesList');
 
@@ -468,13 +431,14 @@
         profilesList.innerHTML = `
           <div class="item">
             <h4 class="item-title">Erreur</h4>
-            <p class="item-text">${error.message}</p>
+            <p class="item-text">${escapeHtml(error.message)}</p>
           </div>
         `;
         return [];
       }
 
       const profiles = data || [];
+      profilesCache = profiles;
 
       document.getElementById('clientsCount').textContent = String(
         profiles.filter(p => (p.role || 'client') === 'client').length
@@ -497,10 +461,10 @@
       profilesList.innerHTML = profiles.map(function(profile) {
         return `
           <div class="item">
-            <h4 class="item-title">${profile.full_name || 'Utilisateur sans nom'}</h4>
+            <h4 class="item-title">${escapeHtml(profile.full_name || 'Utilisateur sans nom')}</h4>
             <p class="item-text">
-              ID : ${profile.id}<br>
-              Rôle : ${profile.role || 'client'}
+              ID : ${escapeHtml(profile.id)}<br>
+              Rôle : ${escapeHtml(profile.role || 'client')}
             </p>
           </div>
         `;
@@ -521,7 +485,7 @@
         ordersList.innerHTML = `
           <div class="item">
             <h4 class="item-title">Erreur</h4>
-            <p class="item-text">${error.message}</p>
+            <p class="item-text">${escapeHtml(error.message)}</p>
           </div>
         `;
         return [];
@@ -530,12 +494,6 @@
       const orders = data || [];
 
       document.getElementById('ordersCount').textContent = String(orders.length);
-
-      const inProgress = orders.filter(function(order) {
-        return (order.statut || '').toLowerCase().includes('cours');
-      }).length;
-
-      document.getElementById('inProgressCount').textContent = String(inProgress);
 
       if (orders.length === 0) {
         ordersList.innerHTML = `
@@ -553,20 +511,139 @@
 
         return `
           <div class="item">
-            <h4 class="item-title">${order.titre || 'Commande sans titre'}</h4>
+            <h4 class="item-title">${escapeHtml(order.titre || 'Commande sans titre')}</h4>
             <p class="item-text">
-              Client ID : ${order.client_id || '—'}<br>
-              Type : ${order.type_projet || '—'}<br>
-              Plan : ${order.plan || '—'}<br>
-              Description : ${order.description || '—'}<br>
-              Prix : ${prix}
+              Client ID : ${escapeHtml(order.client_id || '—')}<br>
+              Type : ${escapeHtml(order.type_projet || '—')}<br>
+              Plan : ${escapeHtml(order.plan || '—')}<br>
+              Description : ${escapeHtml(order.description || '—')}<br>
+              Prix : ${escapeHtml(prix)}
             </p>
-            <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
+            <span class="badge ${badgeClass}">${escapeHtml(order.statut || 'Statut inconnu')}</span>
           </div>
         `;
       }).join('');
 
       return orders;
+    }
+
+    function getProfileById(id) {
+      return profilesCache.find(p => p.id === id);
+    }
+
+    async function loadAllMessages() {
+      const { data, error } = await client
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        document.getElementById('conversationList').innerHTML =
+          `<div class="empty">Erreur chargement messages : ${escapeHtml(error.message)}</div>`;
+        return [];
+      }
+
+      messagesCache = data || [];
+      renderConversationList();
+      return messagesCache;
+    }
+
+    function renderConversationList() {
+      const list = document.getElementById('conversationList');
+      const clientIds = [...new Set(messagesCache.map(m => m.client_id))];
+
+      document.getElementById('conversationsCount').textContent = String(clientIds.length);
+
+      if (clientIds.length === 0) {
+        list.innerHTML = `<div class="empty">Aucune conversation pour le moment.</div>`;
+        return;
+      }
+
+      list.innerHTML = clientIds.map(clientId => {
+        const profile = getProfileById(clientId);
+        const messages = messagesCache.filter(m => m.client_id === clientId);
+        const last = messages[messages.length - 1];
+
+        const name = profile?.full_name || 'Client sans nom';
+
+        return `
+          <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
+            <div class="conv-name">${escapeHtml(name)}</div>
+            <div class="conv-preview">${escapeHtml(last?.content || 'Aucun message')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openConversation(clientId) {
+      selectedClientId = clientId;
+
+      const profile = getProfileById(clientId);
+      const messages = messagesCache.filter(m => m.client_id === clientId);
+
+      document.getElementById('selectedClientName').textContent =
+        profile?.full_name || 'Client sans nom';
+
+      document.getElementById('selectedClientInfo').textContent =
+        'Client ID : ' + clientId;
+
+      document.getElementById('replyInput').disabled = false;
+      document.getElementById('replyBtn').disabled = false;
+
+      renderConversationList();
+      renderMessages(messages);
+    }
+
+    function renderMessages(messages) {
+      const box = document.getElementById('adminMessagesBox');
+
+      if (!messages || messages.length === 0) {
+        box.innerHTML = `<div class="empty">Aucun message.</div>`;
+        return;
+      }
+
+      box.innerHTML = messages.map(msg => {
+        const isAdmin = msg.sender_id === currentAdmin.id;
+
+        return `
+          <div class="msg ${isAdmin ? 'admin' : 'client'}">
+            ${escapeHtml(msg.content)}
+            <span class="msg-meta">${isAdmin ? 'Vous' : 'Client'} · ${formatDate(msg.created_at)}</span>
+          </div>
+        `;
+      }).join('');
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function bindReplyForm() {
+      const form = document.getElementById('replyForm');
+      const input = document.getElementById('replyInput');
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!selectedClientId) return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+
+        const { error } = await client.from('messages').insert({
+          client_id: selectedClientId,
+          sender_id: currentAdmin.id,
+          content: text
+        });
+
+        if (error) {
+          alert('Erreur lors de l’envoi du message.');
+          return;
+        }
+
+        await loadAllMessages();
+        openConversation(selectedClientId);
+      });
     }
 
     async function boot() {
@@ -601,6 +678,7 @@
         }
 
         const user = userData.user;
+        currentAdmin = user;
 
         const { data: profile, error: profileError } = await client
           .from('profiles')
@@ -626,8 +704,11 @@
         document.getElementById('app').style.display = 'block';
 
         bindNavigation();
+        bindReplyForm();
+
         await loadOrders();
         await loadProfiles();
+        await loadAllMessages();
       } catch (e) {
         console.error(e);
         window.location.href = AUTH_URL;
