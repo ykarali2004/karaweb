@@ -530,6 +530,26 @@ function bindReplyForm() {
     }
 
     await loadAllMessages();
+    client
+  .channel('messages-realtime')
+  .on(
+    'postgres_changes',
+    {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages'
+    },
+    async (payload) => {
+      console.log('Nouveau message:', payload);
+
+      await loadAllMessages();
+
+      if (selectedClientId) {
+        openConversation(selectedClientId);
+      }
+    }
+  )
+  .subscribe();
     openConversation(selectedClientId);
   });
 }
