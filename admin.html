@@ -41,9 +41,26 @@
     .logo{font-size:30px;font-weight:800;letter-spacing:-1px;margin:0 0 24px;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:6px 10px;margin-bottom:24px}
     .nav{display:flex;flex-direction:column;gap:10px}
-    .nav button{width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:14px 16px;border-radius:12px;text-align:left;cursor:pointer;font-size:15px;transition:.2s ease}
+    .nav button{width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:14px 16px;border-radius:12px;text-align:left;cursor:pointer;font-size:15px;transition:.2s ease;display:flex;justify-content:space-between;align-items:center;gap:8px}
     .nav button:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
     .nav button.active{background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));border-color:rgba(0,231,255,.18)}
+
+    .notif-badge{
+      display:none;
+      min-width:22px;
+      height:22px;
+      padding:0 7px;
+      border-radius:999px;
+      background:var(--red);
+      color:white;
+      font-size:12px;
+      font-weight:800;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .notif-badge.show{display:inline-flex}
+
     .admin-card{margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
     .admin-name{font-size:18px;font-weight:700;margin:0 0 6px}
     .admin-mail{font-size:13px;color:var(--muted);word-break:break-word;margin:0 0 14px}
@@ -66,6 +83,7 @@
     .item{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:16px;padding:18px}
     .item-title{font-size:18px;font-weight:700;margin:0 0 8px}
     .item-text{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+
     .badge{display:inline-block;margin-top:10px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}
     .badge.pending{background:rgba(245,158,11,.14);color:#fbbf24;border:1px solid rgba(245,158,11,.18)}
     .badge.progress{background:rgba(0,231,255,.12);color:var(--cyan);border:1px solid rgba(0,231,255,.16)}
@@ -81,8 +99,10 @@
     .conv-item{padding:16px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s ease}
     .conv-item:hover{background:rgba(255,255,255,.03)}
     .conv-item.active{background:linear-gradient(90deg, rgba(0,231,255,.12), rgba(139,92,246,.12))}
+    .conv-name-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .conv-name{font-weight:700;margin-bottom:6px}
     .conv-preview{color:var(--muted);font-size:13px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .conv-unread{background:var(--red);color:white;border-radius:999px;font-size:11px;font-weight:800;padding:4px 7px}
 
     .messages-box{padding:18px;height:460px;overflow:auto;display:grid;gap:12px;align-content:start}
     .msg{padding:12px 14px;border-radius:14px;max-width:78%;line-height:1.5;font-size:14px;white-space:pre-wrap}
@@ -126,7 +146,10 @@
         <button class="nav-btn active" data-page="overview" type="button">Vue d’ensemble</button>
         <button class="nav-btn" data-page="orders" type="button">Commandes</button>
         <button class="nav-btn" data-page="clients" type="button">Clients</button>
-        <button class="nav-btn" data-page="messages" type="button">Conversations</button>
+        <button class="nav-btn" data-page="messages" type="button">
+          <span>Conversations</span>
+          <span class="notif-badge" id="unreadBadge">0</span>
+        </button>
       </div>
 
       <div class="admin-card">
@@ -161,8 +184,8 @@
             <p class="big-number" id="adminsCount">0</p>
           </div>
           <div class="card">
-            <div class="small-label">Conversations</div>
-            <p class="big-number" id="conversationsCount">0</p>
+            <div class="small-label">Non lus</div>
+            <p class="big-number" id="unreadCountCard">0</p>
           </div>
         </div>
       </section>
@@ -226,6 +249,7 @@ let currentAdmin = null;
 let profilesCache = [];
 let messagesCache = [];
 let selectedClientId = null;
+let realtimeChannel = null;
 
 function escapeHtml(text) {
   return String(text || '')
@@ -275,6 +299,10 @@ function goSite() {
 }
 
 async function logout() {
+  if (realtimeChannel) {
+    client.removeChannel(realtimeChannel);
+  }
+
   await client.auth.signOut();
   window.location.href = AUTH_URL;
 }
@@ -308,6 +336,42 @@ function bindNavigation() {
       setActivePage(btn.getAttribute('data-page'));
     });
   });
+}
+
+function updateUnreadUI() {
+  const unreadMessages = messagesCache.filter(m =>
+    m.is_read === false &&
+    String(m.sender_id) !== String(currentAdmin.id)
+  );
+
+  const total = unreadMessages.length;
+
+  const badge = document.getElementById('unreadBadge');
+  const card = document.getElementById('unreadCountCard');
+
+  if (card) card.textContent = String(total);
+
+  if (badge) {
+    badge.textContent = String(total);
+    badge.classList.toggle('show', total > 0);
+  }
+}
+
+function getUnreadCountForClient(clientId) {
+  return messagesCache.filter(m =>
+    String(m.client_id) === String(clientId) &&
+    m.is_read === false &&
+    String(m.sender_id) !== String(currentAdmin.id)
+  ).length;
+}
+
+async function markConversationAsRead(clientId) {
+  await client
+    .from('messages')
+    .update({ is_read: true })
+    .eq('client_id', clientId)
+    .eq('is_read', false)
+    .neq('sender_id', currentAdmin.id);
 }
 
 async function loadProfiles() {
@@ -435,14 +499,14 @@ async function loadAllMessages() {
 
   messagesCache = data || [];
   renderConversationList();
+  updateUnreadUI();
+
   return messagesCache;
 }
 
 function renderConversationList() {
   const list = document.getElementById('conversationList');
   const clientIds = [...new Set(messagesCache.map(m => m.client_id))];
-
-  document.getElementById('conversationsCount').textContent = String(clientIds.length);
 
   if (clientIds.length === 0) {
     list.innerHTML = `<div class="empty">Aucune conversation pour le moment.</div>`;
@@ -453,18 +517,25 @@ function renderConversationList() {
     const messages = messagesCache.filter(m => String(m.client_id) === String(clientId));
     const last = messages[messages.length - 1];
     const name = getClientName(clientId);
+    const unread = getUnreadCountForClient(clientId);
 
     return `
       <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
-        <div class="conv-name">${escapeHtml(name)}</div>
+        <div class="conv-name-row">
+          <div class="conv-name">${escapeHtml(name)}</div>
+          ${unread > 0 ? `<div class="conv-unread">${unread}</div>` : ''}
+        </div>
         <div class="conv-preview">${escapeHtml(last?.content || 'Aucun message')}</div>
       </div>
     `;
   }).join('');
 }
 
-function openConversation(clientId) {
+async function openConversation(clientId) {
   selectedClientId = clientId;
+
+  await markConversationAsRead(clientId);
+  await loadAllMessages();
 
   const messages = messagesCache.filter(m => String(m.client_id) === String(clientId));
   const name = getClientName(clientId);
@@ -521,7 +592,8 @@ function bindReplyForm() {
     const { error } = await client.from('messages').insert({
       client_id: selectedClientId,
       sender_id: currentAdmin.id,
-      content: text
+      content: text,
+      is_read: false
     });
 
     if (error) {
@@ -530,28 +602,34 @@ function bindReplyForm() {
     }
 
     await loadAllMessages();
-    client
-  .channel('messages-realtime')
-  .on(
-    'postgres_changes',
-    {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'messages'
-    },
-    async (payload) => {
-      console.log('Nouveau message:', payload);
-
-      await loadAllMessages();
-
-      if (selectedClientId) {
-        openConversation(selectedClientId);
-      }
-    }
-  )
-  .subscribe();
-    openConversation(selectedClientId);
+    await openConversation(selectedClientId);
   });
+}
+
+function startRealtimeAdmin() {
+  if (realtimeChannel) {
+    client.removeChannel(realtimeChannel);
+  }
+
+  realtimeChannel = client
+    .channel('admin-messages-realtime')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'messages'
+      },
+      async function() {
+        await loadAllMessages();
+
+        if (selectedClientId) {
+          const messages = messagesCache.filter(m => String(m.client_id) === String(selectedClientId));
+          renderMessages(messages);
+        }
+      }
+    )
+    .subscribe();
 }
 
 async function boot() {
@@ -617,6 +695,8 @@ async function boot() {
     await loadProfiles();
     await loadOrders();
     await loadAllMessages();
+
+    startRealtimeAdmin();
 
   } catch (e) {
     console.error(e);
