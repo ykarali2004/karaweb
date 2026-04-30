@@ -162,15 +162,25 @@
       margin:0 0 14px;
     }
 
-    .logout{
+    .logout,
+    .back-site{
       width:100%;
       border:0;
-      background:#fff;
-      color:#000;
       padding:12px 14px;
       border-radius:12px;
       cursor:pointer;
       font-weight:700;
+      margin-top:10px;
+    }
+
+    .logout{
+      background:#fff;
+      color:#000;
+    }
+
+    .back-site{
+      background:linear-gradient(90deg,var(--cyan),var(--violet));
+      color:#061018;
     }
 
     .main{
@@ -277,13 +287,8 @@
       word-break:break-word;
     }
 
-    .page{
-      display:none;
-    }
-
-    .page.active{
-      display:block;
-    }
+    .page{display:none}
+    .page.active{display:block}
 
     .list{
       display:grid;
@@ -479,6 +484,7 @@
         <div class="user-card">
           <p class="user-name" id="userName">Client</p>
           <p class="user-mail" id="userEmail">...</p>
+          <button class="back-site" onclick="goSite()">← Retour au site</button>
           <button class="logout" onclick="logout()">Se déconnecter</button>
         </div>
       </aside>
@@ -549,8 +555,8 @@
         <section id="page-messages" class="page">
           <div class="chat-box">
             <div class="chat-messages" id="chatMessages">
-              <div class="msg them">Bonjour, bienvenue chez KaraWeb. Nous avons bien reçu votre demande.</div>
-              <div class="msg me">Bonjour, merci. J’aimerais suivre l’avancement de mon site.</div>
+              <div class="msg them">Bonjour, bienvenue chez KaraWeb. Expliquez votre projet ici et nous vous répondrons rapidement.</div>
+              <div class="msg me">Bonjour, j’aimerais discuter de mon projet de site internet.</div>
             </div>
 
             <form class="chat-form" id="chatForm">
@@ -584,8 +590,7 @@
             </div>
 
             <button class="save-btn" type="button" id="saveProfileBtn">Sauvegarder</button>
-            <div class="profile-status" id="profileStatus">Profil prêt à être modifié.</div>
-
+            <div class="profile-status" id="profileStatus"></div>
           </div>
         </section>
       </main>
@@ -594,6 +599,7 @@
 
   <script>
     const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
+    const SITE_URL = 'https://ykarali2004.github.io/karaweb/index.html';
     const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
@@ -604,6 +610,10 @@
 
     const client = window.supabase.createClient(supabaseUrl, supabaseKey);
     let currentUser = null;
+
+    function goSite() {
+      window.location.href = SITE_URL;
+    }
 
     function setActivePage(pageName) {
       document.querySelectorAll('.page').forEach(function(page) {
@@ -628,6 +638,10 @@
           setActivePage(pageName);
         });
       });
+
+      if (window.location.hash === '#messages') {
+        setActivePage('messages');
+      }
     }
 
     function bindFakeChat() {
@@ -638,8 +652,13 @@
 
       if (!form || !input || !messages) return;
 
+      if (count) {
+        count.textContent = String(messages.children.length);
+      }
+
       form.addEventListener('submit', function(e) {
         e.preventDefault();
+
         const text = input.value.trim();
         if (!text) return;
 
@@ -701,129 +720,130 @@
       return data;
     }
 
-function bindProfileSave(user) {
-  const btn = document.getElementById('saveProfileBtn');
-  if (!btn) return;
+    function bindProfileSave(user) {
+      const btn = document.getElementById('saveProfileBtn');
+      if (!btn) return;
 
-  btn.addEventListener('click', async function() {
-    const inputName = document.getElementById('inputName');
-    const fullName = (inputName.value || '').trim();
+      btn.addEventListener('click', async function() {
+        const inputName = document.getElementById('inputName');
+        const fullName = (inputName.value || '').trim();
 
-    if (!fullName) {
-      setProfileStatus('Nom invalide.');
-      return;
+        if (!fullName) {
+          setProfileStatus('Nom invalide.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sauvegarde...';
+        setProfileStatus('Enregistrement...');
+
+        const { error } = await client
+          .from('profiles')
+          .upsert(
+            {
+              id: user.id,
+              full_name: fullName
+            },
+            { onConflict: 'id' }
+          );
+
+        btn.disabled = false;
+        btn.textContent = 'Sauvegarder';
+
+        if (error) {
+          setProfileStatus('Une erreur est survenue.');
+          return;
+        }
+
+        document.getElementById('userName').textContent = fullName;
+        document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
+        document.getElementById('profileName').textContent = fullName;
+
+        setProfileStatus('Modifications enregistrées.');
+      });
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Sauvegarde...';
-    setProfileStatus('Enregistrement...');
+    function getStatusClass(status) {
+      if (!status) return 'pending';
 
-    const { error } = await client
-      .from('profiles')
-      .upsert(
-        {
-          id: user.id,
-          full_name: fullName
-        },
-        { onConflict: 'id' }
-      );
+      const s = status.toLowerCase();
 
-    btn.disabled = false;
-    btn.textContent = 'Sauvegarder';
+      if (s.includes('cours')) return 'progress';
+      if (s.includes('livr')) return 'done';
+      if (s.includes('annul')) return 'cancelled';
+      if (s.includes('attente')) return 'pending';
 
-    if (error) {
-      setProfileStatus('Une erreur est survenue.');
-      return;
+      return 'pending';
     }
 
-    document.getElementById('userName').textContent = fullName;
-    document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
-    document.getElementById('profileName').textContent = fullName;
+    async function loadOrders(user) {
+      const ordersList = document.getElementById('ordersList');
+      const activeProjectsCount = document.getElementById('activeProjectsCount');
 
-    setProfileStatus('Modifications enregistrées.');
-  });
-}
+      if (!ordersList) return;
 
-function getStatusClass(status) {
-  if (!status) return 'pending';
+      ordersList.innerHTML = `
+        <div class="list-item">
+          <h3 class="list-title">Chargement...</h3>
+          <p class="list-text">Récupération de vos commandes.</p>
+        </div>
+      `;
 
-  const s = status.toLowerCase();
+      const { data, error } = await client
+        .from('commandes')
+        .select('*')
+        .eq('client_id', user.id)
+        .order('created_at', { ascending: false });
 
-  if (s.includes('cours')) return 'progress';
-  if (s.includes('livr')) return 'done';
-  if (s.includes('annul')) return 'cancelled';
-  if (s.includes('attente')) return 'pending';
-  return 'pending';
-}
+      if (error) {
+        ordersList.innerHTML = `
+          <div class="list-item">
+            <h3 class="list-title">Erreur</h3>
+            <p class="list-text">${error.message}</p>
+          </div>
+        `;
+        return;
+      }
 
-async function loadOrders(user) {
-  const ordersList = document.getElementById('ordersList');
-  const activeProjectsCount = document.getElementById('activeProjectsCount');
+      if (!data || data.length === 0) {
+        if (activeProjectsCount) activeProjectsCount.textContent = '0';
 
-  if (!ordersList) return;
+        ordersList.innerHTML = `
+          <div class="list-item">
+            <h3 class="list-title">Aucune commande</h3>
+            <p class="list-text">Vous n’avez pas encore de commande pour le moment.</p>
+          </div>
+        `;
+        return;
+      }
 
-  ordersList.innerHTML = `
-    <div class="list-item">
-      <h3 class="list-title">Chargement...</h3>
-      <p class="list-text">Récupération de vos commandes.</p>
-    </div>
-  `;
+      const activeCount = data.filter(function(order) {
+        const statut = (order.statut || '').toLowerCase();
+        return statut.includes('cours') || statut.includes('attente') || statut.includes('paid');
+      }).length;
 
-  const { data, error } = await client
-    .from('commandes')
-    .select('*')
-    .eq('client_id', user.id)
-    .order('created_at', { ascending: false });
+      if (activeProjectsCount) {
+        activeProjectsCount.textContent = String(activeCount);
+      }
 
-  if (error) {
-    ordersList.innerHTML = `
-      <div class="list-item">
-        <h3 class="list-title">Erreur</h3>
-        <p class="list-text">${error.message}</p>
-      </div>
-    `;
-    return;
-  }
+      ordersList.innerHTML = data.map(function(order) {
+        const badgeClass = getStatusClass(order.statut);
+        const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
 
-  if (!data || data.length === 0) {
-    if (activeProjectsCount) activeProjectsCount.textContent = '0';
-
-    ordersList.innerHTML = `
-      <div class="list-item">
-        <h3 class="list-title">Aucune commande</h3>
-        <p class="list-text">Vous n’avez pas encore de commande pour le moment.</p>
-      </div>
-    `;
-    return;
-  }
-
-  const activeCount = data.filter(function(order) {
-    const statut = (order.statut || '').toLowerCase();
-    return statut.includes('cours') || statut.includes('attente') || statut.includes('paid');
-  }).length;
-
-  if (activeProjectsCount) {
-    activeProjectsCount.textContent = String(activeCount);
-  }
-
-  ordersList.innerHTML = data.map(function(order) {
-    const badgeClass = getStatusClass(order.statut);
-    const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
-
-    return `
-      <div class="list-item">
-        <h3 class="list-title">${order.titre || 'Commande sans titre'}</h3>
-        <p class="list-text">
-          Type de projet : ${order.type_projet || '—'}<br>
-          Plan : ${order.plan || '—'}<br>
-          Description : ${order.description || '—'}<br>
-          Prix : ${prix}
-        </p>
-        <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
-      </div>
-    `;
-  }).join('');
-}
+        return `
+          <div class="list-item">
+            <h3 class="list-title">${order.titre || 'Commande sans titre'}</h3>
+            <p class="list-text">
+              Type de projet : ${order.type_projet || '—'}<br>
+              Plan : ${order.plan || '—'}<br>
+              Description : ${order.description || '—'}<br>
+              Prix : ${prix}
+            </p>
+            <span class="badge ${badgeClass}">${order.statut || 'Statut inconnu'}</span>
+          </div>
+        `;
+      }).join('');
+    }
 
     async function showApp(user) {
       currentUser = user;
