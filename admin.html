@@ -458,10 +458,12 @@
         return [];
       }
 
-      profilesList.innerHTML = profiles.map(function(profile) {
-        return `
-          <div class="item">
-            <h4 class="item-title">${escapeHtml(profile.full_name || 'Utilisateur sans nom')}</h4>
+      profilesList.innerHTML = data.map(function(profile) {
+  const name = profile.full_name || profile.email || 'Client sans nom';
+
+  return `
+    <div class="item">
+      <h4 class="item-title">${name}</h4>
             <p class="item-text">
               ID : ${escapeHtml(profile.id)}<br>
               Rôle : ${escapeHtml(profile.role || 'client')}
@@ -564,7 +566,10 @@
         const messages = messagesCache.filter(m => m.client_id === clientId);
         const last = messages[messages.length - 1];
 
-        const name = profile?.full_name || profile?.email || 'Client sans nom';
+        const name =
+  profile?.full_name ||
+  profile?.email ||
+  'Client sans nom';
         return `
           <div class="conv-item ${selectedClientId === clientId ? 'active' : ''}" onclick="openConversation('${clientId}')">
             <div class="conv-name">${escapeHtml(name)}</div>
