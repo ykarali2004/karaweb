@@ -8,7 +8,6 @@
   <style>
     :root{
       --bg:#06080f;
-      --bg2:#0d1220;
       --card:#111827;
       --border:rgba(255,255,255,.08);
       --text:#e5edf7;
@@ -328,6 +327,7 @@
         <div class="admin-card">
           <p class="admin-name" id="adminName">Admin</p>
           <p class="admin-mail" id="adminEmail">...</p>
+          <button class="btn btn-primary" onclick="goSite()">← Retour au site</button>
           <button class="btn btn-primary" onclick="goClient()">Espace client</button>
           <button class="btn btn-secondary" onclick="logout()">Se déconnecter</button>
         </div>
@@ -386,8 +386,8 @@
           <h3 class="section-title">Conversations</h3>
           <div class="card">
             <p class="placeholder">
-              La messagerie réelle sera branchée ensuite ici.  
-              Cette section est prête pour afficher les conversations clients.
+              La messagerie réelle sera branchée ensuite ici.
+              Cette section servira à voir toutes les conversations clients et à leur répondre depuis l’espace admin.
             </p>
           </div>
         </section>
@@ -398,6 +398,8 @@
   <script>
     const AUTH_URL = 'https://ykarali2004.github.io/karaweb/auth.html';
     const DASHBOARD_URL = 'https://ykarali2004.github.io/karaweb/dashboard.html';
+    const SITE_URL = 'https://ykarali2004.github.io/karaweb/index.html';
+
     const supabaseUrl = 'https://midkwlribyrryremnnyd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZGt3bHJpYnlycnlyZW1ubnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODk3MzMsImV4cCI6MjA5MjQ2NTczM30.SCRohymxA4eenjYJx_gPWPLsV3qstuvD1FIqVGUSbbU';
 
@@ -405,11 +407,14 @@
 
     function getStatusClass(status) {
       if (!status) return 'pending';
+
       const s = status.toLowerCase();
+
       if (s.includes('cours')) return 'progress';
       if (s.includes('livr')) return 'done';
       if (s.includes('annul')) return 'cancelled';
       if (s.includes('attente')) return 'pending';
+
       return 'pending';
     }
 
@@ -442,6 +447,10 @@
       window.location.href = DASHBOARD_URL;
     }
 
+    function goSite() {
+      window.location.href = SITE_URL;
+    }
+
     async function logout() {
       await client.auth.signOut();
       window.location.href = AUTH_URL;
@@ -465,14 +474,17 @@
         return [];
       }
 
+      const profiles = data || [];
+
       document.getElementById('clientsCount').textContent = String(
-        data.filter(p => (p.role || 'client') === 'client').length
-      );
-      document.getElementById('adminsCount').textContent = String(
-        data.filter(p => (p.role || 'client') === 'admin').length
+        profiles.filter(p => (p.role || 'client') === 'client').length
       );
 
-      if (!data || data.length === 0) {
+      document.getElementById('adminsCount').textContent = String(
+        profiles.filter(p => (p.role || 'client') === 'admin').length
+      );
+
+      if (profiles.length === 0) {
         profilesList.innerHTML = `
           <div class="item">
             <h4 class="item-title">Aucun profil</h4>
@@ -482,7 +494,7 @@
         return [];
       }
 
-      profilesList.innerHTML = data.map(function(profile) {
+      profilesList.innerHTML = profiles.map(function(profile) {
         return `
           <div class="item">
             <h4 class="item-title">${profile.full_name || 'Utilisateur sans nom'}</h4>
@@ -494,7 +506,7 @@
         `;
       }).join('');
 
-      return data;
+      return profiles;
     }
 
     async function loadOrders() {
@@ -515,15 +527,17 @@
         return [];
       }
 
-      document.getElementById('ordersCount').textContent = String(data?.length || 0);
+      const orders = data || [];
 
-      const inProgress = (data || []).filter(function(order) {
+      document.getElementById('ordersCount').textContent = String(orders.length);
+
+      const inProgress = orders.filter(function(order) {
         return (order.statut || '').toLowerCase().includes('cours');
       }).length;
 
       document.getElementById('inProgressCount').textContent = String(inProgress);
 
-      if (!data || data.length === 0) {
+      if (orders.length === 0) {
         ordersList.innerHTML = `
           <div class="item">
             <h4 class="item-title">Aucune commande</h4>
@@ -533,7 +547,7 @@
         return [];
       }
 
-      ordersList.innerHTML = data.map(function(order) {
+      ordersList.innerHTML = orders.map(function(order) {
         const badgeClass = getStatusClass(order.statut);
         const prix = order.prix ? Number(order.prix).toFixed(2) + ' €' : 'Prix non défini';
 
@@ -552,7 +566,7 @@
         `;
       }).join('');
 
-      return data;
+      return orders;
     }
 
     async function boot() {
@@ -599,8 +613,12 @@
           return;
         }
 
-        document.getElementById('adminName').textContent = profile.full_name || user.email || 'Admin';
-        document.getElementById('adminEmail').textContent = user.email || '';
+        document.getElementById('adminName').textContent =
+          profile.full_name || user.email || 'Admin';
+
+        document.getElementById('adminEmail').textContent =
+          user.email || '';
+
         document.getElementById('adminSubtitle').textContent =
           'Connecté en tant qu’administrateur : ' + (profile.full_name || user.email || 'Admin');
 
