@@ -43,10 +43,42 @@
     .sidebar{background:rgba(10,14,24,.92);border-right:1px solid var(--border);padding:22px}
     .logo{font-size:30px;font-weight:800;letter-spacing:-1px;margin:0 0 24px;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:6px 10px;margin-bottom:24px}
+
     .nav{display:flex;flex-direction:column;gap:10px}
-    .nav button{width:100%;border:1px solid var(--border);background:transparent;color:var(--text);padding:14px 16px;border-radius:12px;text-align:left;cursor:pointer;font-size:15px;transition:.2s ease}
+    .nav button{
+      width:100%;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      padding:14px 16px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-size:15px;
+      transition:.2s ease;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
     .nav button:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.03)}
     .nav button.active{background:linear-gradient(90deg, rgba(0,231,255,.14), rgba(139,92,246,.14));border-color:rgba(0,231,255,.18)}
+
+    .notif-badge{
+      display:none;
+      min-width:22px;
+      height:22px;
+      padding:0 7px;
+      border-radius:999px;
+      background:var(--red);
+      color:white;
+      font-size:12px;
+      font-weight:800;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .notif-badge.show{display:inline-flex}
 
     .user-card{margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
     .user-name{font-size:18px;font-weight:700;margin:0 0 6px}
@@ -126,7 +158,10 @@
       <div class="nav">
         <button class="nav-btn active" data-page="accueil" type="button">Accueil</button>
         <button class="nav-btn" data-page="commandes" type="button">Mes commandes</button>
-        <button class="nav-btn" data-page="messages" type="button">Messages</button>
+        <button class="nav-btn" data-page="messages" type="button">
+          <span>Messages</span>
+          <span class="notif-badge" id="clientUnreadBadge">0</span>
+        </button>
         <button class="nav-btn" data-page="profil" type="button">Mon profil</button>
       </div>
 
@@ -154,7 +189,7 @@
             <p class="big-number" id="activeProjectsCount">0</p>
           </div>
           <div class="card">
-            <div class="small-label">Messages</div>
+            <div class="small-label">Messages non lus</div>
             <p class="big-number" id="msgCount">0</p>
           </div>
           <div class="card">
@@ -225,7 +260,7 @@
 
           <div class="field">
             <label for="inputName">Nom</label>
-            <input type="text" id="inputName" class="input" />
+            <input type="text" id="inputName" class="input" placeholder="Votre nom" />
           </div>
 
           <div class="field">
@@ -250,7 +285,9 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
+let currentProfile = null;
 let realtimeChannel = null;
+let messagesCache = [];
 
 function goSite() {
   window.location.href = SITE_URL;
@@ -275,6 +312,77 @@ function formatDate(value) {
   });
 }
 
+function cleanName(value) {
+  const name = (value || '').trim();
+
+  if (!name) return '';
+  if (name.toLowerCase().includes('test')) return '';
+
+  return name;
+}
+
+function getDisplayName(user, profile) {
+  const profileName = cleanName(profile?.full_name);
+  const googleName = cleanName(user.user_metadata?.full_name || user.user_metadata?.name);
+
+  return (
+    profileName ||
+    googleName ||
+    user.email ||
+    'Client'
+  );
+}
+
+async function ensureProfile(user) {
+  const { data } = await client
+    .from('profiles')
+    .select('id, full_name, email')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const googleName = cleanName(user.user_metadata?.full_name || user.user_metadata?.name);
+
+  if (!data) {
+    const { data: inserted } = await client
+      .from('profiles')
+      .insert({
+        id: user.id,
+        full_name: googleName || null,
+        email: user.email || ''
+      })
+      .select('id, full_name, email')
+      .maybeSingle();
+
+    return inserted;
+  }
+
+  const updates = {};
+  let shouldUpdate = false;
+
+  if (!data.email && user.email) {
+    updates.email = user.email;
+    shouldUpdate = true;
+  }
+
+  if (data.full_name && data.full_name.toLowerCase().includes('test')) {
+    updates.full_name = googleName || null;
+    shouldUpdate = true;
+  }
+
+  if (shouldUpdate) {
+    const { data: updated } = await client
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id)
+      .select('id, full_name, email')
+      .maybeSingle();
+
+    return updated || data;
+  }
+
+  return data;
+}
+
 function setActivePage(pageName) {
   document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -284,6 +392,12 @@ function setActivePage(pageName) {
 
   if (targetPage) targetPage.classList.add('active');
   if (targetBtn) targetBtn.classList.add('active');
+
+  if (pageName === 'messages' && currentUser) {
+    markClientMessagesAsRead(currentUser).then(function() {
+      loadMessages(currentUser);
+    });
+  }
 }
 
 function bindNavigation() {
@@ -303,29 +417,11 @@ function setProfileStatus(text) {
   if (el) el.textContent = text;
 }
 
-function getDisplayName(user, profile) {
-  return (
-    profile?.full_name ||
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    user.email ||
-    'Client'
-  );
-}
-
 async function loadProfile(user) {
-  const { data, error } = await client
-    .from('profiles')
-    .select('id, full_name, email')
-    .eq('id', user.id)
-    .maybeSingle();
+  const profile = await ensureProfile(user);
+  currentProfile = profile;
 
-  if (error) {
-    setProfileStatus('Une erreur est survenue.');
-    return null;
-  }
-
-  const name = getDisplayName(user, data);
+  const name = getDisplayName(user, profile);
 
   document.getElementById('userName').textContent = name;
   document.getElementById('userEmail').textContent = user.email || '';
@@ -334,11 +430,11 @@ async function loadProfile(user) {
   document.getElementById('profileEmail').textContent = user.email || '';
   document.getElementById('profileProvider').textContent = user.app_metadata?.provider || 'google';
 
-  document.getElementById('inputName').value = name;
+  document.getElementById('inputName').value = cleanName(profile?.full_name) || '';
   document.getElementById('inputEmail').value = user.email || '';
 
   setProfileStatus('');
-  return data;
+  return profile;
 }
 
 function bindProfileSave(user) {
@@ -349,7 +445,7 @@ function bindProfileSave(user) {
     const fullName = (document.getElementById('inputName').value || '').trim();
 
     if (!fullName) {
-      setProfileStatus('Nom invalide.');
+      setProfileStatus('Veuillez entrer votre nom.');
       return;
     }
 
@@ -357,7 +453,7 @@ function bindProfileSave(user) {
     btn.textContent = 'Sauvegarde...';
     setProfileStatus('Enregistrement...');
 
-    const { error } = await client
+    const { data, error } = await client
       .from('profiles')
       .upsert(
         {
@@ -366,7 +462,9 @@ function bindProfileSave(user) {
           email: user.email || ''
         },
         { onConflict: 'id' }
-      );
+      )
+      .select('id, full_name, email')
+      .maybeSingle();
 
     btn.disabled = false;
     btn.textContent = 'Sauvegarder';
@@ -375,6 +473,8 @@ function bindProfileSave(user) {
       setProfileStatus('Une erreur est survenue.');
       return;
     }
+
+    currentProfile = data;
 
     document.getElementById('userName').textContent = fullName;
     document.getElementById('welcomeTitle').textContent = 'Bienvenue ' + fullName;
@@ -453,13 +553,34 @@ async function loadOrders(user) {
   }).join('');
 }
 
-async function loadMessages(user) {await client
-  .from('messages')
-  .update({ is_read: true })
-  .eq('client_id', user.id)
-  .neq('sender_id', user.id);
-  const box = document.getElementById('chatMessages');
+function updateClientUnreadUI() {
+  const unread = messagesCache.filter(m =>
+    m.is_read === false &&
+    String(m.sender_id) !== String(currentUser.id)
+  ).length;
+
+  const badge = document.getElementById('clientUnreadBadge');
   const count = document.getElementById('msgCount');
+
+  if (count) count.textContent = String(unread);
+
+  if (badge) {
+    badge.textContent = String(unread);
+    badge.classList.toggle('show', unread > 0);
+  }
+}
+
+async function markClientMessagesAsRead(user) {
+  await client
+    .from('messages')
+    .update({ is_read: true })
+    .eq('client_id', user.id)
+    .eq('is_read', false)
+    .neq('sender_id', user.id);
+}
+
+async function loadMessages(user) {
+  const box = document.getElementById('chatMessages');
 
   const { data, error } = await client
     .from('messages')
@@ -472,15 +593,15 @@ async function loadMessages(user) {await client
     return;
   }
 
-  if (!data || data.length === 0) {
-    if (count) count.textContent = '0';
+  messagesCache = data || [];
+  updateClientUnreadUI();
+
+  if (messagesCache.length === 0) {
     box.innerHTML = `<div class="empty">Aucun message pour le moment. Écrivez-nous pour expliquer votre projet.</div>`;
     return;
   }
 
-  if (count) count.textContent = String(data.length);
-
-  box.innerHTML = data.map(msg => {
+  box.innerHTML = messagesCache.map(msg => {
     const isMe = String(msg.sender_id) === String(user.id);
 
     return `
@@ -509,7 +630,8 @@ function bindRealChat(user) {
     const { error } = await client.from('messages').insert({
       client_id: user.id,
       sender_id: user.id,
-      content: text
+      content: text,
+      is_read: false
     });
 
     if (error) {
@@ -519,6 +641,10 @@ function bindRealChat(user) {
 
     await loadMessages(user);
   });
+}
+
+function isMessagesPageOpen() {
+  return document.getElementById('page-messages')?.classList.contains('active');
 }
 
 function startRealtimeMessages(user) {
@@ -537,6 +663,10 @@ function startRealtimeMessages(user) {
         filter: 'client_id=eq.' + user.id
       },
       async function() {
+        if (isMessagesPageOpen()) {
+          await markClientMessagesAsRead(user);
+        }
+
         await loadMessages(user);
       }
     )
@@ -556,6 +686,11 @@ async function showApp(user) {
   await loadProfile(user);
   await loadOrders(user);
   await loadMessages(user);
+
+  if (window.location.hash === '#messages') {
+    await markClientMessagesAsRead(user);
+    await loadMessages(user);
+  }
 
   startRealtimeMessages(user);
 }
