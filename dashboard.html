@@ -163,23 +163,32 @@
     .badge.done{background:rgba(34,197,94,.12);color:#15803d;border:1px solid rgba(34,197,94,.18)}
     .badge.cancelled{background:rgba(239,68,68,.12);color:#b42318;border:1px solid rgba(239,68,68,.18)}
 
-    .chat-shell{
+    .kw-chat{
       height:100%;
       min-height:0;
       display:grid;
       grid-template-rows:auto 1fr auto;
-      background:rgba(255,255,255,.82);
+      background:#ffffff;
       border:1px solid var(--border);
       border-radius:28px;
       box-shadow:0 25px 70px rgba(0,0,0,.08);
-      backdrop-filter:blur(18px);
       overflow:hidden;
     }
 
-    .chat-header{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.68);flex-shrink:0}
-    .chat-title{margin:0;font-size:18px;font-weight:900;color:var(--black)}
-    .chat-sub{margin:5px 0 0;font-size:13px;color:var(--muted)}
-    .chat-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .kw-chat-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.92);
+      flex-shrink:0;
+    }
+
+    .kw-chat-title{margin:0;font-size:18px;font-weight:900;color:var(--black)}
+    .kw-chat-sub{margin:5px 0 0;font-size:13px;color:var(--muted)}
+    .kw-chat-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 
     .tool-btn{
       border:1px solid var(--border);
@@ -195,101 +204,113 @@
 
     .tool-btn:hover{border-color:var(--border2);transform:translateY(-1px)}
 
-    .chat-messages{
+    .kw-chat-body{
       height:100%;
       overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      padding:14px 16px 16px;
+      padding:16px;
       background:
-        radial-gradient(circle at 10% 0%, rgba(142,124,255,.05), transparent 26%),
-        radial-gradient(circle at 90% 100%, rgba(199,168,102,.06), transparent 30%);
+        linear-gradient(180deg,rgba(255,255,255,.72),rgba(247,247,244,.96)),
+        radial-gradient(circle at top left,rgba(142,124,255,.06),transparent 30%);
     }
 
-    .msg{
-      display:inline-block;
+    .kw-message-row{
+      width:100%;
+      display:flex;
+      margin:3px 0;
+    }
+
+    .kw-message-row.me{
+      justify-content:flex-end;
+    }
+
+    .kw-message-row.them{
+      justify-content:flex-start;
+    }
+
+    .kw-bubble{
+      display:inline-flex;
+      flex-direction:column;
       width:auto;
-      max-width:320px;
+      max-width:360px;
       min-width:0;
-      padding:6px 9px;
-      border-radius:13px;
-      line-height:1.28;
-      font-size:13px;
-      white-space:pre-wrap;
+      padding:7px 10px 5px;
+      border-radius:16px;
+      font-size:13.5px;
+      line-height:1.32;
       word-break:break-word;
       overflow-wrap:anywhere;
-      box-shadow:none;
+      white-space:pre-wrap;
+      box-shadow:0 3px 10px rgba(0,0,0,.045);
     }
 
-    .msg.me{
-      align-self:flex-end;
-      background:#0b0c10;
+    .kw-message-row.me .kw-bubble{
+      background:#08090c;
       color:#fff;
-      margin-left:0;
-      border-bottom-right-radius:4px;
+      border-bottom-right-radius:5px;
     }
 
-    .msg.them{
-      align-self:flex-start;
-      background:#fff;
-      color:var(--text);
-      border:1px solid var(--border);
-      margin-right:0;
-      border-bottom-left-radius:4px;
+    .kw-message-row.them .kw-bubble{
+      background:#f4f4f1;
+      color:#14161b;
+      border:1px solid rgba(0,0,0,.06);
+      border-bottom-left-radius:5px;
     }
 
-    .msg-meta{
+    .kw-text{
+      display:block;
+      width:auto;
+      max-width:100%;
+    }
+
+    .kw-meta{
       display:block;
       margin-top:3px;
-      font-size:9px;
-      line-height:1;
+      font-size:9.5px;
       opacity:.55;
+      line-height:1;
       text-align:right;
+      white-space:nowrap;
     }
 
-    .chat-image{
+    .kw-image{
       display:block;
-      max-width:220px;
-      max-height:220px;
-      border-radius:11px;
-      margin-top:5px;
+      max-width:230px;
+      max-height:230px;
       object-fit:cover;
-      border:1px solid rgba(255,255,255,.18);
+      border-radius:12px;
+      margin-top:6px;
     }
 
-    .msg.them .chat-image{border:1px solid var(--border)}
-
-    .file-link{
+    .kw-file{
       display:flex;
       align-items:center;
       gap:8px;
       color:inherit;
       text-decoration:none;
-      margin-top:5px;
-      padding:7px 9px;
-      border-radius:11px;
-      background:rgba(255,255,255,.12);
+      margin-top:6px;
+      padding:8px 10px;
+      border-radius:12px;
+      background:rgba(255,255,255,.16);
       font-size:12px;
       font-weight:800;
+      white-space:normal;
     }
 
-    .msg.them .file-link{
-      background:#f3f3ef;
-      color:var(--black);
+    .kw-message-row.them .kw-file{
+      background:#fff;
     }
 
-    .chat-form{
+    .kw-chat-form{
       flex-shrink:0;
       display:flex;
       gap:8px;
       padding:12px;
       border-top:1px solid var(--border);
-      background:rgba(255,255,255,.76);
+      background:#fff;
       align-items:flex-end;
     }
 
-    .chat-input{
+    .kw-input{
       flex:1;
       min-width:180px;
       height:42px;
@@ -308,9 +329,9 @@
       font-family:Arial,sans-serif;
     }
 
-    .chat-input::-webkit-scrollbar{width:0;height:0}
+    .kw-input::-webkit-scrollbar{width:0;height:0}
 
-    .chat-input:focus{
+    .kw-input:focus{
       border-color:var(--black);
       box-shadow:0 0 0 4px rgba(0,0,0,.055);
     }
@@ -345,7 +366,7 @@
       border-color:var(--border2);
     }
 
-    .chat-send{
+    .kw-send{
       border:0;
       background:#0b0c10;
       color:#fff;
@@ -359,7 +380,7 @@
       flex-shrink:0;
     }
 
-    .chat-send:hover{transform:translateY(-2px)}
+    .kw-send:hover{transform:translateY(-2px)}
 
     .save-btn{
       margin-top:14px;
@@ -409,7 +430,7 @@
       .page{height:auto;min-height:65vh}
       .grid,.two-col{grid-template-columns:1fr}
       .topbar{flex-direction:column;align-items:flex-start}
-      .chat-shell{height:72vh}
+      .kw-chat{height:72vh}
 
       .mobile-bottom-nav{
         display:grid;
@@ -447,13 +468,13 @@
 
     @media (max-width: 560px){
       .title{font-size:28px}
-      .msg{max-width:88%}
-      .chat-header{align-items:flex-start;flex-direction:column}
-      .chat-tools{justify-content:flex-start}
-      .chat-form{gap:6px}
-      .chat-send{padding:0 12px}
+      .kw-bubble{max-width:86%}
+      .kw-chat-top{align-items:flex-start;flex-direction:column}
+      .kw-chat-actions{justify-content:flex-start}
+      .kw-chat-form{gap:6px}
+      .kw-send{padding:0 12px}
       .quick-actions{grid-template-columns:1fr}
-      .chat-image{max-width:200px}
+      .kw-image{max-width:200px}
     }
   </style>
 </head>
@@ -566,27 +587,27 @@
       </section>
 
       <section id="page-messages" class="page">
-        <div class="chat-shell">
-          <div class="chat-header">
+        <div class="kw-chat">
+          <div class="kw-chat-top">
             <div>
-              <h3 class="chat-title">Conversation KaraWeb</h3>
-              <p class="chat-sub">Expliquez votre projet, envoyez une image ou partagez un fichier.</p>
+              <h3 class="kw-chat-title">Conversation KaraWeb</h3>
+              <p class="kw-chat-sub">Expliquez votre projet, envoyez une image ou partagez un fichier.</p>
             </div>
 
-            <div class="chat-tools">
+            <div class="kw-chat-actions">
               <button class="tool-btn" type="button" onclick="setActivePage('accueil')">Accueil</button>
               <button class="tool-btn" type="button" onclick="scrollChatBottom()">Bas de page</button>
             </div>
           </div>
 
-          <div class="chat-messages" id="chatMessages">
+          <div class="kw-chat-body" id="chatMessages">
             <div class="empty">Chargement des messages...</div>
           </div>
 
-          <form class="chat-form" id="chatForm">
+          <form class="kw-chat-form" id="chatForm">
             <textarea
               id="chatInput"
-              class="chat-input"
+              class="kw-input"
               placeholder="Écrire un message..."
               rows="1"
             ></textarea>
@@ -599,7 +620,7 @@
               </svg>
             </button>
 
-            <button type="submit" class="chat-send">Envoyer</button>
+            <button type="submit" class="kw-send">Envoyer</button>
           </form>
         </div>
       </section>
@@ -1003,21 +1024,23 @@ async function loadMessages(user) {
     let content = '';
 
     if (msg.content) {
-      content += `<div>${escapeHtml(msg.content)}</div>`;
+      content += `<span class="kw-text">${escapeHtml(msg.content)}</span>`;
     }
 
     if (msg.image_url && msg.message_type === 'image') {
-      content += `<a href="${escapeAttr(msg.image_url)}" target="_blank"><img class="chat-image" src="${escapeAttr(msg.image_url)}" alt="${escapeAttr(msg.file_name || 'Image envoyée')}"></a>`;
+      content += `<a href="${escapeAttr(msg.image_url)}" target="_blank"><img class="kw-image" src="${escapeAttr(msg.image_url)}" alt="${escapeAttr(msg.file_name || 'Image envoyée')}"></a>`;
     }
 
     if (msg.image_url && msg.message_type === 'file') {
-      content += `<a class="file-link" href="${escapeAttr(msg.image_url)}" target="_blank">📎 ${escapeHtml(msg.file_name || 'Fichier envoyé')}</a>`;
+      content += `<a class="kw-file" href="${escapeAttr(msg.image_url)}" target="_blank">📎 ${escapeHtml(msg.file_name || 'Fichier envoyé')}</a>`;
     }
 
     return `
-      <div class="msg ${isMe ? 'me' : 'them'}">
-        ${content}
-        <span class="msg-meta">${isMe ? 'Vous' : 'KaraWeb'} · ${formatDate(msg.created_at)}</span>
+      <div class="kw-message-row ${isMe ? 'me' : 'them'}">
+        <div class="kw-bubble">
+          ${content}
+          <span class="kw-meta">${isMe ? 'Vous' : 'KaraWeb'} · ${formatDate(msg.created_at)}</span>
+        </div>
       </div>
     `;
   }).join('');
